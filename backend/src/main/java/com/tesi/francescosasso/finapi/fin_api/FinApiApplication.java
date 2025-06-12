@@ -24,7 +24,7 @@ public class FinApiApplication {
         corsConfiguration.setAllowCredentials(true);
         List<String> allowedOrigins;
 
-        allowedOrigins = Arrays.asList("http://192.168.20.53/:8080", "http://192.168.32.11/:8080", "http://localhost:4200/");
+        allowedOrigins = List.of("http://localhost:4200/");
 
         corsConfiguration.setAllowedOrigins(allowedOrigins);
         corsConfiguration.setAllowedHeaders(Arrays.asList("Origin", "Access-Control-Allow-Origin", "Content-Type",
