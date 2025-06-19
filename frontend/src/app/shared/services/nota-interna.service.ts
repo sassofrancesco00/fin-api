@@ -1,17 +1,19 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { NotaInterna } from '../models/nota-interna.model';
-import { ApiResponse } from '../models/api-response.model';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {NotaInterna} from '../models/nota-interna';
+import {ApiResponse} from '../models/api-response';
+import {environmentTest} from '../../../environments/environment';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotaInternaService {
-  private readonly endpoint = `${environment.apiUrl}/note-interne`;
+  private readonly endpoint = `${environmentTest.apiUrlLocal}/note-interne`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+  }
 
   getNoteByRichiesta(richiestaId: number): Observable<NotaInterna[]> {
     return this.http.get<NotaInterna[]>(`${this.endpoint}/richiesta/${richiestaId}`);

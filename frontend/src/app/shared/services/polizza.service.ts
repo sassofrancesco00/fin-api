@@ -1,15 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { PolizzaAssicurativa } from '../models/polizza.model';
-import { ApiResponse, PaginatedResponse } from '../models/api-response.model';
+import {ApiResponse, PaginatedResponse} from '../models/api-response';
+import { PolizzaAssicurativa } from '../models/polizza';
+import {environmentTest} from '../../../environments/environment';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class PolizzaService {
-  private readonly endpoint = `${environment.apiUrl}/polizze`;
+  private readonly endpoint = `${environmentTest.apiUrlLocal}/polizze`;
 
   constructor(private http: HttpClient) {}
 

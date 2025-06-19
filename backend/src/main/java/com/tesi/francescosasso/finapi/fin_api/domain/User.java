@@ -1,9 +1,11 @@
 package com.tesi.francescosasso.finapi.fin_api.domain;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
 @Table(name = "user")
+@Data
 public class User {
 
     @Id

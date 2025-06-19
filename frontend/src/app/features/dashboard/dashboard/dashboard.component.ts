@@ -1,13 +1,16 @@
 // src/app/features/dashboard/dashboard.component.ts
 import {Component, OnInit} from '@angular/core';
-import {AuthService} from '../../core/auth/auth.service';
-import {RichiestaInvestimentoService} from '../../shared/services/richiesta-investimento.service';
-import {PolizzaService} from '../../shared/services/polizza.service';
-import {ClienteService} from '../../shared/services/cliente.service';
-import {User} from '../../shared/models/user.model';
-import {RichiestaInvestimento} from '../../shared/models/richiesta-investimento.model';
-import {PolizzaAssicurativa} from '../../shared/models/polizza.model';
 import {forkJoin} from 'rxjs';
+import {RichiestaInvestimento} from '../../../shared/models/richiesta-investimento';
+import {PolizzaAssicurativa} from '../../../shared/models/polizza';
+import {AuthService} from '../../../core/auth/auth.service';
+import {RichiestaInvestimentoService} from '../../../shared/services/richiesta-investimento.service';
+import {PolizzaService} from '../../../shared/services/polizza.service';
+import {ClienteService} from '../../../shared/services/cliente.service';
+import {TitleCasePipe} from '@angular/common';
+import {User} from '../../../shared/models/user';
+import {PaginatedResponse} from '../../../shared/models/api-response';
+import {Cliente} from '../../../shared/models/cliente';
 
 interface DashboardStats {
   totalClienti: number;
@@ -23,6 +26,9 @@ interface DashboardStats {
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
+  imports: [
+    TitleCasePipe
+  ],
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
@@ -56,6 +62,16 @@ export class DashboardComponent implements OnInit {
     this.loadDashboardData();
   }
 
+  // Type guard per verificare se la risposta è paginata
+  private isPaginatedResponse<T>(response: any): response is PaginatedResponse<T> {
+    return response && typeof response === 'object' && 'content' in response && 'totalElements' in response;
+  }
+
+  // Type guard per verificare se la risposta è un array
+  private isArrayResponse<T>(response: any): response is T[] {
+    return Array.isArray(response);
+  }
+
   private loadDashboardData(): void {
     this.loading = true;
 
@@ -86,20 +102,59 @@ export class DashboardComponent implements OnInit {
                polizzeApprovateResponse,
                polizzeInScadenzaResponse
              ]) => {
+
+        // Gestione sicura delle risposte con type checking
+        const totalClienti = this.isPaginatedResponse<Cliente>(clientiResponse) ?
+          clientiResponse.totalElements : 0;
+
+        const richiesteInRevisione = this.isPaginatedResponse<RichiestaInvestimento>(richiesteInRevisioneResponse) ?
+          richiesteInRevisioneResponse.totalElements : 0;
+
+        const richiesteApprovate = this.isPaginatedResponse<RichiestaInvestimento>(richiesteApprovateResponse) ?
+          richiesteApprovateResponse.totalElements : 0;
+
+        const richiesteRespinte = this.isPaginatedResponse<RichiestaInvestimento>(richiesteRespinteResponse) ?
+          richiesteRespinteResponse.totalElements : 0;
+
+        const polizzeInRevisione = this.isPaginatedResponse<PolizzaAssicurativa>(polizzeInRevisioneResponse) ?
+          polizzeInRevisioneResponse.totalElements : 0;
+
+        const polizzeApprovate = this.isPaginatedResponse<PolizzaAssicurativa>(polizzeApprovateResponse) ?
+          polizzeApprovateResponse.totalElements : 0;
+
+        const polizzeInScadenzaCount = this.isArrayResponse<PolizzaAssicurativa>(polizzeInScadenzaResponse) ?
+          polizzeInScadenzaResponse.length :
+          (this.isPaginatedResponse<PolizzaAssicurativa>(polizzeInScadenzaResponse) ?
+            polizzeInScadenzaResponse.totalElements : 0);
+
+        // Estrazione del contenuto per i calcoli
+        const richiesteContent = this.isPaginatedResponse<RichiestaInvestimento>(richiesteResponse) ?
+          richiesteResponse.content :
+          (this.isArrayResponse<RichiestaInvestimento>(richiesteResponse) ? richiesteResponse : []);
+
+        const polizzeContent = this.isPaginatedResponse<PolizzaAssicurativa>(polizzeResponse) ?
+          polizzeResponse.content :
+          (this.isArrayResponse<PolizzaAssicurativa>(polizzeResponse) ? polizzeResponse : []);
+
+        const polizzeInScadenzaContent = this.isArrayResponse<PolizzaAssicurativa>(polizzeInScadenzaResponse) ?
+          polizzeInScadenzaResponse :
+          (this.isPaginatedResponse<PolizzaAssicurativa>(polizzeInScadenzaResponse) ?
+            polizzeInScadenzaResponse.content : []);
+
         this.stats = {
-          totalClienti: clientiResponse.totalElements,
-          richiesteInRevisione: richiesteInRevisioneResponse.totalElements,
-          richiesteApprovate: richiesteApprovateResponse.totalElements,
-          richiesteRespinte: richiesteRespinteResponse.totalElements,
-          polizzeInRevisione: polizzeInRevisioneResponse.totalElements,
-          polizzeApprovate: polizzeApprovateResponse.totalElements,
-          polizzeInScadenza: polizzeInScadenzaResponse.length,
-          volumeInvestimentiMese: this.calculateVolumeInvestimenti(richiesteResponse.content)
+          totalClienti,
+          richiesteInRevisione,
+          richiesteApprovate,
+          richiesteRespinte,
+          polizzeInRevisione,
+          polizzeApprovate,
+          polizzeInScadenza: polizzeInScadenzaCount,
+          volumeInvestimentiMese: this.calculateVolumeInvestimenti(richiesteContent)
         };
 
-        this.recentRichieste = richiesteResponse.content.slice(0, 5);
-        this.recentPolizze = polizzeResponse.content.slice(0, 5);
-        this.polizzeInScadenza = polizzeInScadenzaResponse.slice(0, 5);
+        this.recentRichieste = richiesteContent.slice(0, 5);
+        this.recentPolizze = polizzeContent.slice(0, 5);
+        this.polizzeInScadenza = polizzeInScadenzaContent.slice(0, 5);
 
         this.loading = false;
       },
