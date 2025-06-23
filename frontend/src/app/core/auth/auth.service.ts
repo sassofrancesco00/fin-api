@@ -39,7 +39,7 @@ export class AuthService {
       localStorage.removeItem(this.USER_KEY);
     }
     this.currentUserSubject.next(null);
-    this.router.navigate(['/auth/login']);
+    this.router.navigate(['/login']);
   }
 
   isAuthenticated(): boolean {

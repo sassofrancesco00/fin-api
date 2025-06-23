@@ -1,125 +1,211 @@
-<!-- src/app/features/auth/login/login.component.html -->
+<!-- login.component.html -->
 <div class="login-container">
-  <div class="container-fluid vh-100">
-    <div class="row h-100">
-      <!-- Left Panel - Branding -->
-      <div class="col-md-6 d-none d-md-flex bg-primary text-white align-items-center">
-        <div class="text-center w-100">
-          <div class="mb-4">
-            <i class="fas fa-chart-line fa-5x mb-3"></i>
-            <h1 class="fw-bold">FinAPI</h1>
-            <p class="lead">Sistema di gestione digitale delle pratiche finanziarie</p>
-          </div>
-          <div class="features-list">
-            <div class="feature-item mb-3">
-              <i class="fas fa-shield-alt me-2"></i>
-              <span>Sicurezza avanzata con JWT</span>
-            </div>
-            <div class="feature-item mb-3">
-              <i class="fas fa-users me-2"></i>
-              <span>Gestione clienti centralizzata</span>
-            </div>
-            <div class="feature-item mb-3">
-              <i class="fas fa-file-invoice-dollar me-2"></i>
-              <span>Pratiche digitali tracciabili</span>
-            </div>
-          </div>
-        </div>
-      </div>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-10 col-xl-8">
+        <div class="glass-card">
+          <div class="row g-0">
 
-      <!-- Right Panel - Login Form -->
-      <div class="col-md-6 d-flex align-items-center">
-        <div class="w-100 px-4">
-          <div class="login-form-container mx-auto" style="max-width: 400px;">
+            <!-- Brand Section - Left Side -->
+            <div class="col-lg-6 d-none d-lg-block">
+              <div class="brand-section h-100 p-5 d-flex flex-column justify-content-center text-white position-relative">
 
-            <!-- Mobile Header -->
-            <div class="text-center mb-4 d-md-none">
-              <i class="fas fa-chart-line fa-3x text-primary mb-2"></i>
-              <h2 class="fw-bold">FinAPI</h2>
-            </div>
-
-            <!-- Login Form -->
-            <div class="card shadow-lg border-0">
-              <div class="card-body p-5">
-                <h3 class="card-title text-center mb-4">Accedi al sistema</h3>
-
-                <!-- Error Alert -->
-                <div *ngIf="error" class="alert alert-danger" role="alert">
-                  <i class="fas fa-exclamation-triangle me-2"></i>
-                  {{ error }}
+                <!-- Logo -->
+                <div class="text-center mb-4">
+                  <div class="logo-icon">
+                    <i class="fas fa-chart-line fa-2x text-white"></i>
+                  </div>
+                  <h1 class="fw-bold mb-2">FinAPI</h1>
+                  <p class="opacity-75 mb-0">Sistema di gestione digitale</p>
+                  <p class="opacity-75">delle pratiche finanziarie</p>
                 </div>
 
-                <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-                  <!-- Email Field -->
-                  <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <div class="input-group">
-                      <span class="input-group-text">
-                        <i class="fas fa-envelope"></i>
-                      </span>
-                      <input
-                        type="email"
-                        class="form-control"
-                        id="email"
-                        formControlName="email"
-                        placeholder="Inserisci la tua email"
-                        [class.is-invalid]="email?.invalid && email?.touched">
+                <!-- Features -->
+                <div class="features-grid">
+                  <div class="feature-card text-center">
+                    <div class="feature-icon mb-3">
+                      <i class="fas fa-shield-alt fa-2x"></i>
                     </div>
-                    <div *ngIf="email?.invalid && email?.touched" class="invalid-feedback">
-                      <div *ngIf="email?.errors?.['required']">L'email è obbligatoria</div>
-                      <div *ngIf="email?.errors?.['email']">Inserisci un'email valida</div>
-                    </div>
+                    <h6 class="fw-semibold mb-2">Sicurezza Avanzata</h6>
+                    <small class="opacity-75">Autenticazione JWT e crittografia end-to-end</small>
                   </div>
 
-                  <!-- Password Field -->
-                  <div class="mb-4">
-                    <label for="password" class="form-label">Password</label>
-                    <div class="input-group">
-                      <span class="input-group-text">
-                        <i class="fas fa-lock"></i>
-                      </span>
-                      <input
-                        type="password"
-                        class="form-control"
-                        id="password"
-                        formControlName="password"
-                        placeholder="Inserisci la tua password"
-                        [class.is-invalid]="password?.invalid && password?.touched">
+                  <div class="feature-card text-center">
+                    <div class="feature-icon mb-3">
+                      <i class="fas fa-users fa-2x"></i>
                     </div>
-                    <div *ngIf="password?.invalid && password?.touched" class="invalid-feedback">
-                      <div *ngIf="password?.errors?.['required']">La password è obbligatoria</div>
-                      <div *ngIf="password?.errors?.['minlength']">La password deve essere di almeno 6 caratteri</div>
-                    </div>
+                    <h6 class="fw-semibold mb-2">Gestione Clienti</h6>
+                    <small class="opacity-75">Database centralizzato e sincronizzato</small>
                   </div>
 
-                  <!-- Submit Button -->
-                  <div class="d-grid">
-                    <button
-                      type="submit"
-                      class="btn btn-primary btn-lg"
-                      [disabled]="loading || loginForm.invalid">
-                      <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
-                      <i *ngIf="!loading" class="fas fa-sign-in-alt me-2"></i>
-                      {{ loading ? 'Accesso in corso...' : 'Accedi' }}
-                    </button>
+                  <div class="feature-card text-center">
+                    <div class="feature-icon mb-3">
+                      <i class="fas fa-file-invoice-dollar fa-2x"></i>
+                    </div>
+                    <h6 class="fw-semibold mb-2">Pratiche Digitali</h6>
+                    <small class="opacity-75">Workflow automatizzati e tracciabili</small>
                   </div>
-                </form>
+                </div>
 
-                <!-- Footer Info -->
-                <div class="text-center mt-4">
-                  <small class="text-muted">
-                    Sistema riservato al personale autorizzato
-                  </small>
+                <!-- Bottom Stats -->
+                <div class="row text-center mt-4">
+                  <div class="col-4">
+                    <div class="stat-item">
+                      <h4 class="fw-bold mb-1">500+</h4>
+                      <small class="opacity-75">Clienti</small>
+                    </div>
+                  </div>
+                  <div class="col-4">
+                    <div class="stat-item">
+                      <h4 class="fw-bold mb-1">2.5K+</h4>
+                      <small class="opacity-75">Pratiche</small>
+                    </div>
+                  </div>
+                  <div class="col-4">
+                    <div class="stat-item">
+                      <h4 class="fw-bold mb-1">99.9%</h4>
+                      <small class="opacity-75">Uptime</small>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <!-- Help Section -->
-            <div class="text-center mt-4">
-              <small class="text-muted">
-                <i class="fas fa-question-circle me-1"></i>
-                Problemi di accesso? Contatta l'amministratore di sistema
-              </small>
+            <!-- Form Section - Right Side -->
+            <div class="col-lg-6">
+              <div class="form-section h-100 p-5 d-flex flex-column justify-content-center">
+
+                <!-- Mobile Header -->
+                <div class="text-center mb-4 d-lg-none">
+                  <div class="logo-icon-mobile mb-3">
+                    <i class="fas fa-chart-line fa-2x text-primary"></i>
+                  </div>
+                  <h2 class="fw-bold text-primary">FinAPI</h2>
+                  <p class="text-muted">Accedi al tuo pannello di controllo</p>
+                </div>
+
+                <!-- Desktop Header -->
+                <div class="text-center mb-4 d-none d-lg-block">
+                  <h2 class="fw-bold text-dark mb-2">Bentornato!</h2>
+                  <p class="text-muted">Accedi per continuare al tuo pannello</p>
+                </div>
+
+                <!-- Error Alert -->
+                <div *ngIf="error" class="alert alert-danger alert-modern mb-4" role="alert">
+                  <div class="d-flex align-items-center">
+                    <i class="fas fa-exclamation-triangle me-3 fa-lg"></i>
+                    <div>
+                      <strong>Errore di accesso</strong><br>
+                      <small>{{ error }}</small>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Login Form -->
+                <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="needs-validation" novalidate>
+
+                  <!-- Email Field -->
+                  <div class="form-floating mb-4">
+                    <input
+                      type="email"
+                      class="form-control form-control-modern"
+                      id="email"
+                      formControlName="email"
+                      placeholder="nome@esempio.com"
+                      [class.is-invalid]="email?.invalid && email?.touched"
+                      [class.is-valid]="email?.valid && email?.touched">
+                    <label for="email">
+                      <i class="fas fa-envelope me-2"></i>Indirizzo Email
+                    </label>
+                    <div class="input-group-text-modern">
+                      <i class="fas fa-user text-muted"></i>
+                    </div>
+                    <div *ngIf="email?.invalid && email?.touched" class="invalid-feedback">
+                      <div *ngIf="email?.errors?.['required']">
+                        <i class="fas fa-exclamation-circle me-1"></i>L'email è obbligatoria
+                      </div>
+                      <div *ngIf="email?.errors?.['email']">
+                        <i class="fas fa-exclamation-circle me-1"></i>Inserisci un'email valida
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Password Field -->
+                  <div class="form-floating mb-4">
+                    <input
+                      type="password"
+                      class="form-control form-control-modern"
+                      id="password"
+                      formControlName="password"
+                      placeholder="Password"
+                      [class.is-invalid]="password?.invalid && password?.touched"
+                      [class.is-valid]="password?.valid && password?.touched">
+                    <label for="password">
+                      <i class="fas fa-lock me-2"></i>Password
+                    </label>
+                    <div class="input-group-text-modern">
+                      <i class="fas fa-key text-muted"></i>
+                    </div>
+                    <div *ngIf="password?.invalid && password?.touched" class="invalid-feedback">
+                      <div *ngIf="password?.errors?.['required']">
+                        <i class="fas fa-exclamation-circle me-1"></i>La password è obbligatoria
+                      </div>
+                      <div *ngIf="password?.errors?.['minlength']">
+                        <i class="fas fa-exclamation-circle me-1"></i>Minimo 6 caratteri
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Remember Me -->
+                  <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" id="rememberMe">
+                    <label class="form-check-label text-muted" for="rememberMe">
+                      Ricordami per 30 giorni
+                    </label>
+                  </div>
+
+                  <!-- Submit Button -->
+                  <div class="d-grid mb-4">
+                    <button
+                      type="submit"
+                      class="btn btn-login btn-lg position-relative"
+                      [disabled]="loading || loginForm.invalid">
+
+                      <span *ngIf="!loading" class="btn-content">
+                        <i class="fas fa-sign-in-alt me-2"></i>
+                        Accedi al Sistema
+                      </span>
+
+                      <span *ngIf="loading" class="btn-content">
+                        <div class="spinner-border spinner-border-sm me-2" role="status">
+                          <span class="visually-hidden">Loading...</span>
+                        </div>
+                        Accesso in corso...
+                      </span>
+                    </button>
+                  </div>
+
+                  <!-- Forgot Password -->
+                  <div class="text-center">
+                    <a href="#" class="text-decoration-none text-muted small">
+                      <i class="fas fa-question-circle me-1"></i>
+                      Password dimenticata?
+                    </a>
+                  </div>
+                </form>
+
+                <!-- Footer -->
+                <div class="text-center mt-4">
+                  <div class="security-badge mb-3">
+                    <i class="fas fa-shield-alt text-success me-2"></i>
+                    <small class="text-muted">Connessione sicura SSL</small>
+                  </div>
+                  <small class="text-muted d-block">
+                    Sistema riservato al personale autorizzato<br>
+                    © 2024 FinAPI. Tutti i diritti riservati.
+                  </small>
+                </div>
+              </div>
             </div>
           </div>
         </div>
