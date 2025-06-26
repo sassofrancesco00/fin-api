@@ -1,6 +1,8 @@
 package com.tesi.francescosasso.finapi.fin_api.api;
 
 import com.tesi.francescosasso.finapi.fin_api.domain.PolizzaAssicurativa;
+import com.tesi.francescosasso.finapi.fin_api.domain.dto.PolizzaAssicurativaDTO;
+import com.tesi.francescosasso.finapi.fin_api.service.PolizzaAssicurativaService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,12 +20,12 @@ public class PolizzaAssicurativaResource {
     private PolizzaAssicurativaService polizzaService;
 
     @GetMapping
-    public List<PolizzaAssicurativa> getAll() {
+    public List<PolizzaAssicurativaDTO> getAll() {
         return polizzaService.findAll();
     }
 
     @GetMapping("/cliente/{clienteId}")
-    public List<PolizzaAssicurativa> getByCliente(@PathVariable Long clienteId) {
+    public List<PolizzaAssicurativaDTO> getByCliente(@PathVariable Long clienteId) {
         return polizzaService.findByClienteId(clienteId);
     }
 

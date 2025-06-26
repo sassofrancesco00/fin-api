@@ -1,9 +1,12 @@
 package com.tesi.francescosasso.finapi.fin_api.domain;
 
 import jakarta.persistence.*;
+import lombok.Data;
+
 import java.time.LocalDate;
 
 @Entity
+@Data
 public class PolizzaAssicurativa {
 
     @Id

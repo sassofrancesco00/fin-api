@@ -1,7 +1,8 @@
 package com.tesi.francescosasso.finapi.fin_api.api;
 
 import com.tesi.francescosasso.finapi.fin_api.domain.Richiesta;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.tesi.francescosasso.finapi.fin_api.domain.dto.RichiestaDTO;
+import com.tesi.francescosasso.finapi.fin_api.service.RichiestaService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,12 +19,12 @@ public class RichiestaResource {
     private RichiestaService richiestaService;
 
     @GetMapping
-    public List<Richiesta> getAll() {
+    public List<RichiestaDTO> getAll() {
         return richiestaService.findAll();
     }
 
     @GetMapping("/cliente/{clienteId}")
-    public List<Richiesta> getByCliente(@PathVariable Long clienteId) {
+    public List<RichiestaDTO> getByCliente(@PathVariable Long clienteId) {
         return richiestaService.findByClienteId(clienteId);
     }
 

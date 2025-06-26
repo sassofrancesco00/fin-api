@@ -1,6 +1,8 @@
 package com.tesi.francescosasso.finapi.fin_api.api;
 
 import com.tesi.francescosasso.finapi.fin_api.domain.Cliente;
+import com.tesi.francescosasso.finapi.fin_api.domain.dto.ClienteDTO;
+import com.tesi.francescosasso.finapi.fin_api.service.ClienteService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,12 +19,12 @@ public class ClienteResource {
     private ClienteService clienteService;
 
     @GetMapping
-    public List<Cliente> getAllClienti() {
+    public List<ClienteDTO> getAllClienti() {
         return clienteService.findAll();
     }
 
     @GetMapping("/{id}")
-    public Cliente getCliente(@PathVariable Long id) {
+    public ClienteDTO getCliente(@PathVariable Long id) {
         return clienteService.findById(id).orElse(null);
     }
 
