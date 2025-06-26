@@ -9,6 +9,7 @@ export interface PolizzaAssicurativa {
   userId: number;
   user?: User;
   tipoPolizza: 'Vita' | 'Infortuni' | 'RC_Auto' | 'Casa';
+  numeroPolizza: string
   premio: number;
   dataInizio: Date;
   dataScadenza: Date;

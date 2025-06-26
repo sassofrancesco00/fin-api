@@ -16,7 +16,7 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
 
   // DASHBOARD
-  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
+  { path: 'dashboard', component: DashboardComponent },
 
   // GESTIONE CLIENTI
   { path: 'clienti', component: ClienteListComponent, canActivate: [AuthGuard] },

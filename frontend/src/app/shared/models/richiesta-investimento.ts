@@ -11,7 +11,9 @@ export interface RichiestaInvestimento {
   importo: number;
   tipoInvestimento: 'Azioni' | 'Obbligazioni' | 'ETF';
   dataInserimento: Date;
+  dataModifica:   Date;
   stato: 'in_revisione' | 'Approvata' | 'Respinta';
   motivazioneRespinta?: string;
-  noteInterne?: NotaInterna[];
+  noteInterne?: NotaInterna;
+  consulenteId: number
 }

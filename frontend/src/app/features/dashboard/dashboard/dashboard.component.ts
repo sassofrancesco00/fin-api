@@ -7,7 +7,7 @@ import {AuthService} from '../../../core/auth/auth.service';
 import {RichiestaInvestimentoService} from '../../../shared/services/richiesta-investimento.service';
 import {PolizzaService} from '../../../shared/services/polizza.service';
 import {ClienteService} from '../../../shared/services/cliente.service';
-import {TitleCasePipe} from '@angular/common';
+import {NgClass, TitleCasePipe} from '@angular/common';
 import {User} from '../../../shared/models/user';
 import {PaginatedResponse} from '../../../shared/models/api-response';
 import {Cliente} from '../../../shared/models/cliente';
@@ -27,7 +27,8 @@ interface DashboardStats {
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   imports: [
-    TitleCasePipe
+    TitleCasePipe,
+    NgClass
   ],
   styleUrls: ['./dashboard.component.css']
 })
