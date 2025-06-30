@@ -1,0 +1,280 @@
+<!-- src/app/features/dashboard/dashboard.component.bak.html -->
+<div class="dashboard-wrapper">
+  <!-- Header Section -->
+  <div class="dashboard-header">
+    <div class="container-fluid">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <div class="welcome-section">
+            <h1 class="dashboard-title">Dashboard</h1>
+            <div class="user-info">
+              <span class="welcome-text">Benvenuto, <strong>{{ currentUser?.nome }}</strong></span>
+              <span class="user-badge">{{ currentUser?.ruolo }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 text-end">
+          <button class="refresh-btn" (click)="refreshDashboard()" [disabled]="loading">
+            <i class="fas fa-sync-alt" [class.fa-spin]="loading"></i>
+            <span>Aggiorna</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p class="loading-text">Caricamento dati in corso...</p>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!loading" class="dashboard-content">
+    <div class="container-fluid">
+
+      <!-- Stats Cards Grid -->
+      <div class="stats-grid">
+        <!-- Clienti Card -->
+        <div class="stat-card primary">
+          <div class="stat-content">
+            <div class="stat-info">
+              <h3 class="stat-label">Clienti Totali</h3>
+              <div class="stat-value">{{ stats.totalClienti }}</div>
+            </div>
+            <div class="stat-icon">
+              <i class="fas fa-users"></i>
+            </div>
+          </div>
+          <div class="stat-footer">
+            <div class="stat-trend positive">
+              <i class="fas fa-arrow-up"></i>
+              <span>+5.2% dal mese scorso</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Richieste in Revisione -->
+        <div class="stat-card warning">
+          <div class="stat-content">
+            <div class="stat-info">
+              <h3 class="stat-label">In Revisione</h3>
+              <div class="stat-value">{{ stats.richiesteInRevisione }}</div>
+            </div>
+            <div class="stat-icon">
+              <i class="fas fa-clock"></i>
+            </div>
+          </div>
+          <div class="stat-footer">
+            <div class="stat-trend neutral">
+              <i class="fas fa-minus"></i>
+              <span>Stabile</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Volume Investimenti -->
+        <div class="stat-card success">
+          <div class="stat-content">
+            <div class="stat-info">
+              <h3 class="stat-label">Volume Investimenti</h3>
+              <div class="stat-value">{{ formatCurrency(stats.volumeInvestimentiMese) }}</div>
+            </div>
+            <div class="stat-icon">
+              <i class="fas fa-euro-sign"></i>
+            </div>
+          </div>
+          <div class="stat-footer">
+            <div class="stat-trend positive">
+              <i class="fas fa-arrow-up"></i>
+              <span>+12.8% dal mese scorso</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Polizze in Scadenza -->
+        <div class="stat-card danger">
+          <div class="stat-content">
+            <div class="stat-info">
+              <h3 class="stat-label">Polizze in Scadenza</h3>
+              <div class="stat-value">{{ stats.polizzeInScadenza }}</div>
+            </div>
+            <div class="stat-icon">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+          </div>
+          <div class="stat-footer">
+            <div class="stat-trend negative">
+              <i class="fas fa-arrow-down"></i>
+              <span>Richiedono attenzione</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content Grid -->
+      <div class="content-grid">
+
+        <!-- Recent Richieste Card -->
+        <div class="content-card">
+          <div class="card-header">
+            <div class="header-content">
+              <h2 class="card-title">
+                <i class="fas fa-chart-line"></i>
+                Richieste Investimento Recenti
+              </h2>
+              <a routerLink="/investimenti" class="action-btn primary">
+                <i class="fas fa-plus"></i>
+                <span>Nuova Richiesta</span>
+              </a>
+            </div>
+          </div>
+          <div class="card-body">
+            <div *ngIf="recentRichieste.length === 0" class="empty-state">
+              <div class="empty-icon">
+                <i class="fas fa-file-invoice"></i>
+              </div>
+              <p class="empty-text">Nessuna richiesta recente</p>
+            </div>
+            <div *ngFor="let richiesta of recentRichieste; let last = last"
+                 class="list-item" [class.no-border]="last">
+              <div class="item-content">
+                <div class="item-main">
+                  <h4 class="item-title">{{ richiesta.cliente?.nome }}</h4>
+                  <p class="item-subtitle">
+                    {{ formatCurrency(richiesta.importo) }} ? {{ richiesta.tipoInvestimento }}
+                  </p>
+                  <span class="item-date">{{ formatDate(richiesta.dataInserimento) }}</span>
+                </div>
+                <div class="item-status">
+                  <span class="status-badge" [ngClass]="getStatoClass(richiesta.stato)">
+                    {{ richiesta.stato | titlecase }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Polizze Card -->
+        <div class="content-card">
+          <div class="card-header">
+            <div class="header-content">
+              <h2 class="card-title">
+                <i class="fas fa-shield-alt"></i>
+                Polizze Recenti
+              </h2>
+              <a routerLink="/polizze" class="action-btn primary">
+                <i class="fas fa-plus"></i>
+                <span>Nuova Polizza</span>
+              </a>
+            </div>
+          </div>
+          <div class="card-body">
+            <div *ngIf="recentPolizze.length === 0" class="empty-state">
+              <div class="empty-icon">
+                <i class="fas fa-shield-alt"></i>
+              </div>
+              <p class="empty-text">Nessuna polizza recente</p>
+            </div>
+            <div *ngFor="let polizza of recentPolizze; let last = last"
+                 class="list-item" [class.no-border]="last">
+              <div class="item-content">
+                <div class="item-main">
+                  <h4 class="item-title">{{ polizza.cliente?.nome }}</h4>
+                  <p class="item-subtitle">
+                    {{ formatCurrency(polizza.premio) }} ? {{ polizza.tipoPolizza }}
+                  </p>
+                  <span class="item-date">Scadenza: {{ formatDate(polizza.dataScadenza) }}</span>
+                </div>
+                <div class="item-status">
+                  <span class="status-badge" [ngClass]="getStatoClass(polizza.stato)">
+                    {{ polizza.stato | titlecase }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Polizze in Scadenza Alert -->
+      <div *ngIf="polizzeInScadenza.length > 0" class="alert-section">
+        <div class="alert-card danger">
+          <div class="alert-header">
+            <div class="alert-icon">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="alert-content">
+              <h3 class="alert-title">Polizze in Scadenza</h3>
+              <p class="alert-subtitle">{{ polizzeInScadenza.length }} polizze scadono nei prossimi 30 giorni</p>
+            </div>
+          </div>
+          <div class="alert-body">
+            <div class="alerts-grid">
+              <div *ngFor="let polizza of polizzeInScadenza" class="alert-item">
+                <div class="alert-item-content">
+                  <h4 class="alert-item-title">{{ polizza.cliente?.nome }}</h4>
+                  <p class="alert-item-text">{{ polizza.tipoPolizza }}</p>
+                  <span class="alert-item-date">Scade il {{ formatDate(polizza.dataScadenza) }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="actions-section">
+        <div class="content-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-bolt"></i>
+              Azioni Rapide
+            </h2>
+          </div>
+          <div class="card-body">
+            <div class="actions-grid">
+              <a routerLink="/clienti/nuovo" class="action-card primary">
+                <div class="action-icon">
+                  <i class="fas fa-user-plus"></i>
+                </div>
+                <h3 class="action-title">Nuovo Cliente</h3>
+                <p class="action-subtitle">Aggiungi un nuovo cliente</p>
+              </a>
+
+              <a routerLink="/investimenti/nuovo" class="action-card success">
+                <div class="action-icon">
+                  <i class="fas fa-chart-line"></i>
+                </div>
+                <h3 class="action-title">Nuova Richiesta</h3>
+                <p class="action-subtitle">Crea richiesta investimento</p>
+              </a>
+
+              <a routerLink="/polizze/nuovo" class="action-card info">
+                <div class="action-icon">
+                  <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 class="action-title">Nuova Polizza</h3>
+                <p class="action-subtitle">Aggiungi una polizza</p>
+              </a>
+
+              <a *ngIf="currentUser?.ruolo === 'SUPERVISORE'"
+                 routerLink="/investimenti?stato=in_revisione"
+                 class="action-card warning">
+                <div class="action-icon">
+                  <i class="fas fa-tasks"></i>
+                </div>
+                <h3 class="action-title">Revisioni</h3>
+                <p class="action-subtitle">Gestisci le revisioni</p>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

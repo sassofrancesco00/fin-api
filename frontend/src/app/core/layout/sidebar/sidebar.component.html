@@ -1,1 +1,12 @@
-<p>sidebar works!</p>
+<nav class="sidebar">
+  <ul class="nav flex-column">
+    <ng-container *ngFor="let item of routes">
+      <li class="nav-item" *ngIf="canShow(item)">
+        <a [routerLink]="item.route" routerLinkActive="active" class="nav-link">
+          <i *ngIf="item.icon" class="{{ item.icon }} me-2"></i>
+          {{ item.label }}
+        </a>
+      </li>
+    </ng-container>
+  </ul>
+</nav>
