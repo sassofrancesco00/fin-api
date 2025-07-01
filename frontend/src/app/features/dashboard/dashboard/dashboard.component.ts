@@ -1,16 +1,68 @@
 // src/app/features/dashboard/dashboard.component.ts
 import {Component, OnInit} from '@angular/core';
-import {forkJoin} from 'rxjs';
-import {RichiestaInvestimento} from '../../../shared/models/richiesta-investimento';
-import {PolizzaAssicurativa} from '../../../shared/models/polizza';
-import {AuthService} from '../../../core/auth/auth.service';
-import {RichiestaInvestimentoService} from '../../../shared/services/richiesta-investimento.service';
-import {PolizzaService} from '../../../shared/services/polizza.service';
-import {ClienteService} from '../../../shared/services/cliente.service';
-import {NgClass, TitleCasePipe} from '@angular/common';
-import {User} from '../../../shared/models/user';
-import {PaginatedResponse} from '../../../shared/models/api-response';
-import {Cliente} from '../../../shared/models/cliente';
+import {NgClass, TitleCasePipe, CommonModule} from '@angular/common';
+import {RouterModule} from '@angular/router';
+import { SidebarComponent } from '../../../core/layout/sidebar/sidebar.component';
+
+// Interfaces (same as your models)
+interface Cliente {
+  id?: number;
+  nome: string;
+  cognome: string;
+  codiceFiscale: string;
+  telefono: string;
+  email: string;
+}
+
+interface User {
+  id: number;
+  nome: string;
+  cognome: string;
+  email: string;
+  ruolo: 'CONSULENTE' | 'SUPERVISORE';
+}
+
+interface NotaInterna {
+  id?: number;
+  richiestaId?: number;
+  polizzaId?: number;
+  autoreId: number;
+  autore?: User;
+  testo: string;
+  dataCreazione: Date;
+}
+
+interface PolizzaAssicurativa {
+  id?: number;
+  clienteId: number;
+  cliente?: Cliente;
+  userId: number;
+  user?: User;
+  tipoPolizza: 'Vita' | 'Infortuni' | 'RC_Auto' | 'Casa';
+  numeroPolizza: string;
+  premio: number;
+  dataInizio: Date;
+  dataScadenza: Date;
+  stato: 'in_revisione' | 'Approvata' | 'Respinta';
+  motivazioneRespinta?: string;
+  noteInterne?: NotaInterna[];
+}
+
+interface RichiestaInvestimento {
+  id?: number;
+  clienteId: number;
+  cliente?: Cliente;
+  userId: number;
+  user?: User;
+  importo: number;
+  tipoInvestimento: 'Azioni' | 'Obbligazioni' | 'ETF';
+  dataInserimento: Date;
+  dataModifica: Date;
+  stato: 'in_revisione' | 'Approvata' | 'Respinta';
+  motivazioneRespinta?: string;
+  noteInterne?: NotaInterna;
+  consulenteId: number;
+}
 
 interface DashboardStats {
   totalClienti: number;
@@ -26,9 +78,13 @@ interface DashboardStats {
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
+  standalone: true,
   imports: [
+    CommonModule,
     TitleCasePipe,
-    NgClass
+    NgClass,
+    RouterModule,
+    SidebarComponent // importa il componente sidebar
   ],
   styleUrls: ['./dashboard.component.css']
 })
@@ -50,119 +106,180 @@ export class DashboardComponent implements OnInit {
   polizzeInScadenza: PolizzaAssicurativa[] = [];
   loading = true;
 
-  constructor(
-    private authService: AuthService,
-    private richiestaService: RichiestaInvestimentoService,
-    private polizzaService: PolizzaService,
-    private clienteService: ClienteService
-  ) {
+  // DATI MOCK
+  private readonly mockClienti: Cliente[] = [
+    { id: 1, nome: 'Mario', cognome: 'Rossi', codiceFiscale: 'RSSMRA80A01H501X', telefono: '3331234567', email: 'mario.rossi@email.it' },
+    { id: 2, nome: 'Giuseppe', cognome: 'Verdi', codiceFiscale: 'VRDGPP75B15F205Y', telefono: '3339876543', email: 'giuseppe.verdi@email.it' },
+    { id: 3, nome: 'Maria', cognome: 'Bianchi', codiceFiscale: 'BNCMRA85C20D612Z', telefono: '3335554444', email: 'maria.bianchi@email.it' },
+    { id: 4, nome: 'Franco', cognome: 'Neri', codiceFiscale: 'NRIFNC70D10A662W', telefono: '3337778888', email: 'franco.neri@email.it' },
+    { id: 5, nome: 'Laura', cognome: 'Gialli', codiceFiscale: 'GLLLRA88E25B345V', telefono: '3332223333', email: 'laura.gialli@email.it' }
+  ];
+
+  private readonly mockUsers: User[] = [
+    { id: 1, nome: 'Marco', cognome: 'Consulente', email: 'marco.consulente@azienda.it', ruolo: 'CONSULENTE' },
+    { id: 2, nome: 'Anna', cognome: 'Supervisore', email: 'anna.supervisore@azienda.it', ruolo: 'SUPERVISORE' }
+  ];
+
+  private readonly mockRichieste: RichiestaInvestimento[] = [
+    {
+      id: 1,
+      clienteId: 2,
+      cliente: this.mockClienti.find(c => c.id === 2),
+      userId: 1,
+      user: this.mockUsers.find(u => u.id === 1),
+      importo: 50000,
+      tipoInvestimento: 'ETF',
+      dataInserimento: new Date('2025-06-15'),
+      dataModifica: new Date('2025-06-15'),
+      stato: 'in_revisione',
+      consulenteId: 1
+    },
+    {
+      id: 2,
+      clienteId: 3,
+      cliente: this.mockClienti.find(c => c.id === 3),
+      userId: 1,
+      user: this.mockUsers.find(u => u.id === 1),
+      importo: 25000,
+      tipoInvestimento: 'Azioni',
+      dataInserimento: new Date('2025-06-14'),
+      dataModifica: new Date('2025-06-14'),
+      stato: 'Approvata',
+      consulenteId: 1
+    },
+    {
+      id: 3,
+      clienteId: 4,
+      cliente: this.mockClienti.find(c => c.id === 4),
+      userId: 1,
+      user: this.mockUsers.find(u => u.id === 1),
+      importo: 75000,
+      tipoInvestimento: 'Obbligazioni',
+      dataInserimento: new Date('2025-06-13'),
+      dataModifica: new Date('2025-06-13'),
+      stato: 'Respinta',
+      motivazioneRespinta: 'Documentazione incompleta',
+      consulenteId: 1
+    },
+    {
+      id: 4,
+      clienteId: 1,
+      cliente: this.mockClienti.find(c => c.id === 1),
+      userId: 1,
+      user: this.mockUsers.find(u => u.id === 1),
+      importo: 100000,
+      tipoInvestimento: 'ETF',
+      dataInserimento: new Date('2025-06-12'),
+      dataModifica: new Date('2025-06-12'),
+      stato: 'Approvata',
+      consulenteId: 1
+    }
+  ];
+
+  private readonly mockPolizze: PolizzaAssicurativa[] = [
+    {
+      id: 1,
+      clienteId: 5,
+      cliente: this.mockClienti.find(c => c.id === 5),
+      userId: 1,
+      user: this.mockUsers.find(u => u.id === 1),
+      tipoPolizza: 'RC_Auto',
+      numeroPolizza: 'AUTO001',
+      premio: 1200,
+      dataInizio: new Date('2025-01-15'),
+      dataScadenza: new Date('2025-12-15'),
+      stato: 'Approvata'
+    },
+    {
+      id: 2,
+      clienteId: 2,
+      cliente: this.mockClienti.find(c => c.id === 2),
+      userId: 1,
+      user: this.mockUsers.find(u => u.id === 1),
+      tipoPolizza: 'Casa',
+      numeroPolizza: 'CASA001',
+      premio: 800,
+      dataInizio: new Date('2024-07-22'),
+      dataScadenza: new Date('2025-07-22'),
+      stato: 'Approvata'
+    },
+    {
+      id: 3,
+      clienteId: 3,
+      cliente: this.mockClienti.find(c => c.id === 3),
+      userId: 1,
+      user: this.mockUsers.find(u => u.id === 1),
+      tipoPolizza: 'Vita',
+      numeroPolizza: 'VITA001',
+      premio: 2500,
+      dataInizio: new Date('2024-11-10'),
+      dataScadenza: new Date('2025-11-10'),
+      stato: 'Approvata'
+    },
+    {
+      id: 4,
+      clienteId: 1,
+      cliente: this.mockClienti.find(c => c.id === 1),
+      userId: 1,
+      user: this.mockUsers.find(u => u.id === 1),
+      tipoPolizza: 'Infortuni',
+      numeroPolizza: 'INF001',
+      premio: 450,
+      dataInizio: new Date('2025-02-01'),
+      dataScadenza: new Date('2025-08-01'),
+      stato: 'in_revisione'
+    }
+  ];
+
+  constructor() {
+    // Mock current user
+    this.currentUser = this.mockUsers[0]; // Simula un consulente loggato
   }
 
   ngOnInit(): void {
-    this.currentUser = this.authService.getCurrentUser();
     this.loadDashboardData();
-  }
-
-  // Type guard per verificare se la risposta è paginata
-  private isPaginatedResponse<T>(response: any): response is PaginatedResponse<T> {
-    return response && typeof response === 'object' && 'content' in response && 'totalElements' in response;
-  }
-
-  // Type guard per verificare se la risposta è un array
-  private isArrayResponse<T>(response: any): response is T[] {
-    return Array.isArray(response);
   }
 
   private loadDashboardData(): void {
     this.loading = true;
 
-    const filters = this.authService.isConsulente() ?
-      {userId: this.currentUser?.id} : {};
+    // Simula un delay delle API
+    setTimeout(() => {
+      // Calcola le statistiche dai dati mock
+      this.stats = {
+        totalClienti: this.mockClienti.length,
+        richiesteInRevisione: this.mockRichieste.filter(r => r.stato === 'in_revisione').length,
+        richiesteApprovate: this.mockRichieste.filter(r => r.stato === 'Approvata').length,
+        richiesteRespinte: this.mockRichieste.filter(r => r.stato === 'Respinta').length,
+        polizzeInRevisione: this.mockPolizze.filter(p => p.stato === 'in_revisione').length,
+        polizzeApprovate: this.mockPolizze.filter(p => p.stato === 'Approvata').length,
+        polizzeInScadenza: this.getPolizzeInScadenza().length,
+        volumeInvestimentiMese: this.calculateVolumeInvestimenti(this.mockRichieste)
+      };
 
-    const requests = [
-      this.clienteService.getClienti(0, 1),
-      this.richiestaService.getRichieste(0, 5, filters),
-      this.richiestaService.getRichieste(0, 1, {...filters, stato: 'in_revisione'}),
-      this.richiestaService.getRichieste(0, 1, {...filters, stato: 'Approvata'}),
-      this.richiestaService.getRichieste(0, 1, {...filters, stato: 'Respinta'}),
-      this.polizzaService.getPolizze(0, 5, filters),
-      this.polizzaService.getPolizze(0, 1, {...filters, stato: 'in_revisione'}),
-      this.polizzaService.getPolizze(0, 1, {...filters, stato: 'Approvata'}),
-      this.polizzaService.getPolizzeInScadenza(30)
-    ];
+      // Assegna i dati alle proprietÃ  del componente
+      this.recentRichieste = this.mockRichieste
+        .sort((a, b) => new Date(b.dataInserimento).getTime() - new Date(a.dataInserimento).getTime())
+        .slice(0, 5);
 
-    forkJoin(requests).subscribe({
-      next: ([
-               clientiResponse,
-               richiesteResponse,
-               richiesteInRevisioneResponse,
-               richiesteApprovateResponse,
-               richiesteRespinteResponse,
-               polizzeResponse,
-               polizzeInRevisioneResponse,
-               polizzeApprovateResponse,
-               polizzeInScadenzaResponse
-             ]) => {
+      this.recentPolizze = this.mockPolizze
+        .sort((a, b) => new Date(b.dataInizio).getTime() - new Date(a.dataInizio).getTime())
+        .slice(0, 5);
 
-        // Gestione sicura delle risposte con type checking
-        const totalClienti = this.isPaginatedResponse<Cliente>(clientiResponse) ?
-          clientiResponse.totalElements : 0;
+      this.polizzeInScadenza = this.getPolizzeInScadenza().slice(0, 5);
 
-        const richiesteInRevisione = this.isPaginatedResponse<RichiestaInvestimento>(richiesteInRevisioneResponse) ?
-          richiesteInRevisioneResponse.totalElements : 0;
+      this.loading = false;
+    }, 1500); // Simula 1.5 secondi di caricamento
+  }
 
-        const richiesteApprovate = this.isPaginatedResponse<RichiestaInvestimento>(richiesteApprovateResponse) ?
-          richiesteApprovateResponse.totalElements : 0;
+  private getPolizzeInScadenza(): PolizzaAssicurativa[] {
+    const today = new Date();
+    const thirtyDaysFromNow = new Date();
+    thirtyDaysFromNow.setDate(today.getDate() + 30);
 
-        const richiesteRespinte = this.isPaginatedResponse<RichiestaInvestimento>(richiesteRespinteResponse) ?
-          richiesteRespinteResponse.totalElements : 0;
-
-        const polizzeInRevisione = this.isPaginatedResponse<PolizzaAssicurativa>(polizzeInRevisioneResponse) ?
-          polizzeInRevisioneResponse.totalElements : 0;
-
-        const polizzeApprovate = this.isPaginatedResponse<PolizzaAssicurativa>(polizzeApprovateResponse) ?
-          polizzeApprovateResponse.totalElements : 0;
-
-        const polizzeInScadenzaCount = this.isArrayResponse<PolizzaAssicurativa>(polizzeInScadenzaResponse) ?
-          polizzeInScadenzaResponse.length :
-          (this.isPaginatedResponse<PolizzaAssicurativa>(polizzeInScadenzaResponse) ?
-            polizzeInScadenzaResponse.totalElements : 0);
-
-        // Estrazione del contenuto per i calcoli
-        const richiesteContent = this.isPaginatedResponse<RichiestaInvestimento>(richiesteResponse) ?
-          richiesteResponse.content :
-          (this.isArrayResponse<RichiestaInvestimento>(richiesteResponse) ? richiesteResponse : []);
-
-        const polizzeContent = this.isPaginatedResponse<PolizzaAssicurativa>(polizzeResponse) ?
-          polizzeResponse.content :
-          (this.isArrayResponse<PolizzaAssicurativa>(polizzeResponse) ? polizzeResponse : []);
-
-        const polizzeInScadenzaContent = this.isArrayResponse<PolizzaAssicurativa>(polizzeInScadenzaResponse) ?
-          polizzeInScadenzaResponse :
-          (this.isPaginatedResponse<PolizzaAssicurativa>(polizzeInScadenzaResponse) ?
-            polizzeInScadenzaResponse.content : []);
-
-        this.stats = {
-          totalClienti,
-          richiesteInRevisione,
-          richiesteApprovate,
-          richiesteRespinte,
-          polizzeInRevisione,
-          polizzeApprovate,
-          polizzeInScadenza: polizzeInScadenzaCount,
-          volumeInvestimentiMese: this.calculateVolumeInvestimenti(richiesteContent)
-        };
-
-        this.recentRichieste = richiesteContent.slice(0, 5);
-        this.recentPolizze = polizzeContent.slice(0, 5);
-        this.polizzeInScadenza = polizzeInScadenzaContent.slice(0, 5);
-
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Errore nel caricamento dati dashboard:', error);
-        this.loading = false;
-      }
+    return this.mockPolizze.filter(polizza => {
+      const scadenza = new Date(polizza.dataScadenza);
+      return scadenza >= today && scadenza <= thirtyDaysFromNow;
     });
   }
 
@@ -183,13 +300,13 @@ export class DashboardComponent implements OnInit {
   getStatoClass(stato: string): string {
     switch (stato) {
       case 'in_revisione':
-        return 'badge bg-warning';
+        return 'bg-warning';
       case 'Approvata':
-        return 'badge bg-success';
+        return 'bg-success';
       case 'Respinta':
-        return 'badge bg-danger';
+        return 'bg-danger';
       default:
-        return 'badge bg-secondary';
+        return 'bg-secondary';
     }
   }
 
@@ -207,4 +324,22 @@ export class DashboardComponent implements OnInit {
   refreshDashboard(): void {
     this.loadDashboardData();
   }
+
+  // Mock del metodo isConsulente() che probabilmente viene da AuthService
+  isConsulente(): boolean {
+    return this.currentUser?.ruolo === 'CONSULENTE';
+  }
+
+  // Mock del metodo getCurrentUser() che probabilmente viene da AuthService
+  getCurrentUser(): User | null {
+    return this.currentUser;
+  }
+
+  sidebarRoutes = [
+    { label: 'Dashboard', icon: 'fas fa-tachometer-alt', route: '/dashboard' },
+    { label: 'Clienti', icon: 'fas fa-users', route: '/clienti' },
+    { label: 'Investimenti', icon: 'fas fa-chart-line', route: '/investimenti' },
+    { label: 'Polizze', icon: 'fas fa-shield-alt', route: '/polizze' }
+    // aggiungi altre rotte se necessario
+  ];
 }
