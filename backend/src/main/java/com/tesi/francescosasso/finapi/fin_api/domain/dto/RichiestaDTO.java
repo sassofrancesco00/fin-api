@@ -14,7 +14,7 @@ import java.time.LocalDate;
 public class RichiestaDTO {
     private Long id;
     private Long clienteId;
-    private Long userId;
+    private Integer userId;
     private LocalDate dataInserimento;
     private String stato;
     private String motivazioneRespinta;

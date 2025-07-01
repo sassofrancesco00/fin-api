@@ -14,7 +14,7 @@ import java.time.LocalDate;
 public class PolizzaAssicurativaDTO {
     private Long id;
     private Long clienteId;
-    private Long userId;
+    private Integer userId;
     private String tipoPolizza;
     private Double premioAnnuo;
     private LocalDate dataInizio;

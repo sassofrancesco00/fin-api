@@ -27,14 +27,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserDTO> findById(Long id) {
+    public Optional<UserDTO> findById(Integer id) {
         return userRepository.findById(id).map(this::toDTO);
     }
 
     private UserDTO toDTO(User user) {
         UserDTO dto = new UserDTO();
         dto.setId(user.getId());
-        dto.setNome(user.getNome());
+        dto.setFirstname(user.getFirstname());
+        dto.setLastname(user.getLastname());
         dto.setEmail(user.getEmail());
         dto.setRuolo(user.getRuolo().getCodice());
         return dto;

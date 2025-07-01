@@ -1,7 +1,10 @@
 package com.tesi.francescosasso.finapi.fin_api.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,13 +15,18 @@ import java.util.List;
 @Entity
 @Table(name = "user")
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private Integer id;
 
-    private String nome;
+    private String firstname;
+
+    private String lastname;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -27,8 +35,7 @@ public class User implements UserDetails {
     @JoinColumn(name = "ruolo_id", nullable = false)
     private Ruolo ruolo;
 
-    @Column(name = "password_hash", nullable = false)
-    private String passwordHash;
+    private String password;
 
     @Enumerated(EnumType.STRING)
     private Role role;
