@@ -8,7 +8,7 @@
 
             <!-- Brand Section - Left Side -->
             <div class="col-lg-6 d-none d-lg-block">
-              <div class="brand-section h-100 p-5 d-flex flex-column justify-content-center text-white position-relative">
+              <div class="brand-section h-100 p-5 d-flex flex-column justify-content-center position-relative">
 
                 <!-- Logo -->
                 <div class="text-center mb-4">
@@ -92,12 +92,16 @@
 
                 <!-- Error Alert -->
                 <div *ngIf="error" class="alert alert-danger alert-modern mb-4" role="alert">
-                  <div class="d-flex align-items-center">
-                    <i class="fas fa-exclamation-triangle me-3 fa-lg"></i>
-                    <div>
-                      <strong>Errore di accesso</strong><br>
-                      <small>{{ error }}</small>
+                  <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                      <i class="fas fa-exclamation-triangle me-3 fa-lg"></i>
+                      <div>
+                        <strong>Errore di accesso</strong><br>
+                        <small>{{ error }}</small>
+                      </div>
                     </div>
+                    <button type="button" class="btn-close btn-close-white"
+                            (click)="clearError()" aria-label="Chiudi"></button>
                   </div>
                 </div>
 
@@ -112,6 +116,7 @@
                       id="email"
                       formControlName="email"
                       placeholder="nome@esempio.com"
+                      autocomplete="email"
                       [class.is-invalid]="email?.invalid && email?.touched"
                       [class.is-valid]="email?.valid && email?.touched">
                     <label for="email">
@@ -131,18 +136,28 @@
                   </div>
 
                   <!-- Password Field -->
-                  <div class="form-floating mb-4">
+                  <div class="form-floating mb-4 position-relative">
                     <input
-                      type="password"
-                      class="form-control form-control-modern"
+                      [type]="showPassword ? 'text' : 'password'"
+                      class="form-control form-control-modern pe-5"
                       id="password"
                       formControlName="password"
                       placeholder="Password"
+                      autocomplete="current-password"
                       [class.is-invalid]="password?.invalid && password?.touched"
                       [class.is-valid]="password?.valid && password?.touched">
                     <label for="password">
                       <i class="fas fa-lock me-2"></i>Password
                     </label>
+
+                    <!-- Toggle Password Visibility -->
+                    <button type="button"
+                            class="btn btn-link position-absolute top-50 end-0 translate-middle-y me-2 p-1"
+                            (click)="togglePasswordVisibility()"
+                            style="z-index: 10; border: none; background: none;">
+                      <i class="fas" [class.fa-eye]="!showPassword" [class.fa-eye-slash]="showPassword"></i>
+                    </button>
+
                     <div class="input-group-text-modern">
                       <i class="fas fa-key text-muted"></i>
                     </div>
@@ -158,7 +173,11 @@
 
                   <!-- Remember Me -->
                   <div class="form-check mb-4">
-                    <input class="form-check-input" type="checkbox" id="rememberMe">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           id="rememberMe"
+                           [checked]="rememberMe"
+                           (change)="onRememberMeChange($event)">
                     <label class="form-check-label text-muted" for="rememberMe">
                       Ricordami per 30 giorni
                     </label>
@@ -178,7 +197,7 @@
 
                       <span *ngIf="loading" class="btn-content">
                         <div class="spinner-border spinner-border-sm me-2" role="status">
-                          <span class="visually-hidden">Loading...</span>
+                          <span class="visually-hidden">Caricamento...</span>
                         </div>
                         Accesso in corso...
                       </span>
@@ -187,7 +206,9 @@
 
                   <!-- Forgot Password -->
                   <div class="text-center">
-                    <a href="#" class="text-decoration-none text-muted small">
+                    <a href="#"
+                       class="text-decoration-none text-muted small"
+                       (click)="onForgotPassword(); $event.preventDefault()">
                       <i class="fas fa-question-circle me-1"></i>
                       Password dimenticata?
                     </a>
@@ -202,7 +223,7 @@
                   </div>
                   <small class="text-muted d-block">
                     Sistema riservato al personale autorizzato<br>
-                    © 2024 FinAPI. Tutti i diritti riservati.
+                    © 2025 FinAPI. Tutti i diritti riservati.
                   </small>
                 </div>
               </div>
