@@ -28,7 +28,7 @@ public class UserResource {
     }
 
     @GetMapping("/{id}")
-    public UserDTO getUserById(@PathVariable Long id) {
+    public UserDTO getUserById(@PathVariable Integer id) {
         return userService.findById(id).orElse(null);
     }
 }
