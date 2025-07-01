@@ -1,10 +1,10 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, tap, catchError, throwError } from 'rxjs';
 import { Router } from '@angular/router';
-import {LoginRequest, LoginResponse, User} from '../../shared/models/user';
-import {environmentTest} from '../../../environments/environment';
-import {HttpClient} from '@angular/common/http';
+import { LoginRequest, LoginResponse, User } from '../../shared/models/user';
+import { environmentTest } from '../../../environments/environment';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -23,13 +23,16 @@ export class AuthService {
   ) {}
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${environmentTest.apiUrlLocal}/auth/login`, credentials)
+    // CORREZIONE: Usa l'endpoint corretto dal tuo controller
+    return this.http.post<LoginResponse>(`${environmentTest.apiUrlLocal}/auth/authenticate`, credentials)
       .pipe(
         tap(response => {
+          console.log('Login response:', response);
           if (response.token && response.user) {
             this.setSession(response);
           }
-        })
+        }),
+        catchError(this.handleError)
       );
   }
 
@@ -50,8 +53,16 @@ export class AuthService {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       const exp = payload.exp * 1000;
-      return Date.now() < exp;
-    } catch {
+      const isValid = Date.now() < exp;
+
+      if (!isValid) {
+        this.logout(); // Auto-logout se scaduto
+      }
+
+      return isValid;
+    } catch (error) {
+      console.error('Error parsing token:', error);
+      this.logout();
       return false;
     }
   }
@@ -69,7 +80,7 @@ export class AuthService {
 
   hasRole(role: string): boolean {
     const user = this.getCurrentUser();
-    return user?.ruolo === role;
+    return user?.ruolo === role || user?.role === role;
   }
 
   isSupervisore(): boolean {
@@ -94,5 +105,35 @@ export class AuthService {
       return userJson ? JSON.parse(userJson) : null;
     }
     return null;
+  }
+
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    let errorMessage = 'Si è verificato un errore durante il login';
+
+    if (error.error instanceof ErrorEvent) {
+      // Errore client-side
+      errorMessage = `Errore: ${error.error.message}`;
+    } else {
+      // Errore server-side
+      switch (error.status) {
+        case 401:
+          errorMessage = 'Credenziali non valide';
+          break;
+        case 403:
+          errorMessage = 'Accesso negato';
+          break;
+        case 404:
+          errorMessage = 'Servizio non trovato';
+          break;
+        case 500:
+          errorMessage = 'Errore interno del server';
+          break;
+        default:
+          errorMessage = `Errore ${error.status}: ${error.message}`;
+      }
+    }
+
+    console.error('Auth Error:', error);
+    return throwError(() => new Error(errorMessage));
   }
 }

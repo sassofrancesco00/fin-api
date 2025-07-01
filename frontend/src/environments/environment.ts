@@ -3,7 +3,7 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environmentTest = {
-  apiUrlLocal: 'http://localhost:8080',
+  apiUrlLocal: 'http://localhost:8080/api/v1',
   production: false,
 
   //Strie Publishable Key TEST

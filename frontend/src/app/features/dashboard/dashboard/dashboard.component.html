@@ -14,11 +14,10 @@
         <div class="col-md-8">
           <div class="welcome-section">
             <h1 class="dashboard-title">Dashboard</h1>
-            <div class="user-info" *ngIf="currentUser">
-              <span class="welcome-text">Benvenuto, <strong>{{ currentUser.nome }} {{ currentUser.cognome }}</strong></span>
-              <span class="user-badge" [ngClass]="currentUser.ruolo === 'CONSULENTE' ? 'badge bg-primary' : 'badge bg-success'">
-                {{ currentUser.ruolo }}
-              </span>
+            <div class="user-info">
+              <span class="welcome-text">Benvenuto, <strong>{{ currentUser?.firstname }}</strong></span>
+              <span class="user-badge">{{ currentUser?.ruolo }}</span>
+
             </div>
           </div>
         </div>
