@@ -16,8 +16,8 @@ interface Cliente {
 
 interface User {
   id: number;
-  nome: string;
-  cognome: string;
+  firstname: string;
+  lastname: string;
   email: string;
   ruolo: 'CONSULENTE' | 'SUPERVISORE';
 }
@@ -116,8 +116,8 @@ export class DashboardComponent implements OnInit {
   ];
 
   private readonly mockUsers: User[] = [
-    { id: 1, nome: 'Marco', cognome: 'Consulente', email: 'marco.consulente@azienda.it', ruolo: 'CONSULENTE' },
-    { id: 2, nome: 'Anna', cognome: 'Supervisore', email: 'anna.supervisore@azienda.it', ruolo: 'SUPERVISORE' }
+    { id: 1, firstname: 'Marco', lastname: 'Consulente', email: 'marco.consulente@azienda.it', ruolo: 'CONSULENTE' },
+    { id: 2, firstname: 'Anna', lastname: 'Supervisore', email: 'anna.supervisore@azienda.it', ruolo: 'SUPERVISORE' }
   ];
 
   private readonly mockRichieste: RichiestaInvestimento[] = [

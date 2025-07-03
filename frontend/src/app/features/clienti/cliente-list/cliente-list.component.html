@@ -1,1 +1,300 @@
-<p>cliente-list works!</p>
+<!-- Loading Spinner -->
+<div *ngIf="loading" class="loading-wrapper d-flex justify-content-center align-items-center" style="height: 50vh;">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Caricamento...</span>
+  </div>
+</div>
+
+<!-- Clienti List Content -->
+<div *ngIf="!loading" class="clienti-wrapper">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <h1 class="page-title">Gestione Clienti</h1>
+          <p class="text-muted">Visualizza e gestisci tutti i clienti</p>
+        </div>
+        <div class="col-md-6 text-end">
+          <button class="btn btn-primary me-2" (click)="openAddClienteModal()">
+            <i class="fas fa-plus"></i>
+            <span class="ms-2">Nuovo Cliente</span>
+          </button>
+          <button class="btn btn-outline-secondary" (click)="refreshList()">
+            <i class="fas fa-sync-alt"></i>
+            <span class="ms-2">Aggiorna</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <div class="container-fluid">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">Cerca per nome/cognome</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Inserisci nome o cognome..."
+                [(ngModel)]="searchTerm"
+                (input)="onSearchChange()">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Ordina per</label>
+              <select class="form-select" [(ngModel)]="sortBy" (change)="onSortChange()">
+                <option value="nome">Nome</option>
+                <option value="cognome">Cognome</option>
+                <option value="email">Email</option>
+                <option value="telefono">Telefono</option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">Ordine</label>
+              <select class="form-select" [(ngModel)]="sortOrder" (change)="onSortChange()">
+                <option value="asc">Crescente</option>
+                <option value="desc">Decrescente</option>
+              </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+              <button class="btn btn-outline-danger" (click)="clearFilters()">
+                <i class="fas fa-times"></i>
+                <span class="ms-2">Pulisci Filtri</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content Section -->
+  <div class="content-section">
+    <div class="container-fluid">
+      <!-- Stats Cards -->
+      <div class="row g-4 mb-4">
+        <div class="col-md-3">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+              <div class="stat-icon text-primary mb-2">
+                <i class="fas fa-users fa-2x"></i>
+              </div>
+              <h4 class="mb-0">{{ totalClienti }}</h4>
+              <small class="text-muted">Clienti Totali</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+              <div class="stat-icon text-success mb-2">
+                <i class="fas fa-user-check fa-2x"></i>
+              </div>
+              <h4 class="mb-0">{{ clientiAttivi }}</h4>
+              <small class="text-muted">Clienti Attivi</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+              <div class="stat-icon text-warning mb-2">
+                <i class="fas fa-chart-line fa-2x"></i>
+              </div>
+              <h4 class="mb-0">{{ clientiConInvestimenti }}</h4>
+              <small class="text-muted">Con Investimenti</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+              <div class="stat-icon text-info mb-2">
+                <i class="fas fa-shield-alt fa-2x"></i>
+              </div>
+              <h4 class="mb-0">{{ clientiConPolizze }}</h4>
+              <small class="text-muted">Con Polizze</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Clienti Table -->
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-transparent border-0">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+              <i class="fas fa-list me-2"></i>
+              Elenco Clienti ({{ filteredClienti.length }})
+            </h5>
+            <div class="d-flex align-items-center">
+              <span class="me-3">Mostra:</span>
+              <select class="form-select form-select-sm" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div *ngIf="filteredClienti.length === 0" class="text-center py-5">
+            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">Nessun cliente trovato</h5>
+            <p class="text-muted">Prova a modificare i filtri di ricerca o aggiungi un nuovo cliente</p>
+          </div>
+
+          <div *ngIf="filteredClienti.length > 0" class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+              <tr>
+                <th scope="col">
+                  <input type="checkbox" class="form-check-input"
+                         [(ngModel)]="selectAll"
+                         (change)="onSelectAll()">
+                </th>
+                <th scope="col">Nome</th>
+                <th scope="col">Cognome</th>
+                <th scope="col">Email</th>
+                <th scope="col">Telefono</th>
+                <th scope="col">Codice Fiscale</th>
+                <th scope="col">Investimenti</th>
+                <th scope="col">Polizze</th>
+                <th scope="col">Azioni</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let cliente of paginatedClienti; let i = index"
+                  [class.table-active]="selectedClienti.includes(cliente.id!)">
+                <td>
+                  <input type="checkbox" class="form-check-input"
+                         [checked]="selectedClienti.includes(cliente.id!)"
+                         (change)="onClienteSelect(cliente.id!, $event)">
+                </td>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <div class="avatar-sm bg-primary text-white rounded-circle me-2 d-flex align-items-center justify-content-center">
+                      {{ cliente.nome.charAt(0).toUpperCase() }}
+                    </div>
+                    <span class="fw-semibold">{{ cliente.nome }}</span>
+                  </div>
+                </td>
+                <td>{{ cliente.cognome }}</td>
+                <td>
+                  <a [href]="'mailto:' + cliente.email" class="text-decoration-none">
+                    {{ cliente.email }}
+                  </a>
+                </td>
+                <td>
+                  <a [href]="'tel:' + cliente.telefono" class="text-decoration-none">
+                    {{ cliente.telefono }}
+                  </a>
+                </td>
+                <td>
+                  <span class="badge bg-light text-dark">{{ cliente.codiceFiscale }}</span>
+                </td>
+                <td>
+                    <span class="badge bg-success" *ngIf="getClienteInvestimenti(cliente.id!).length > 0">
+                      {{ getClienteInvestimenti(cliente.id!).length }}
+                    </span>
+                  <span class="badge bg-light text-muted" *ngIf="getClienteInvestimenti(cliente.id!).length === 0">
+                      0
+                    </span>
+                </td>
+                <td>
+                    <span class="badge bg-info" *ngIf="getClientePolizze(cliente.id!).length > 0">
+                      {{ getClientePolizze(cliente.id!).length }}
+                    </span>
+                  <span class="badge bg-light text-muted" *ngIf="getClientePolizze(cliente.id!).length === 0">
+                      0
+                    </span>
+                </td>
+                <td>
+                  <div class="btn-group" role="group">
+                    <button class="btn btn-sm btn-outline-primary"
+                            (click)="viewCliente(cliente)"
+                            title="Visualizza">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-warning"
+                            (click)="editCliente(cliente)"
+                            title="Modifica">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger"
+                            (click)="deleteCliente(cliente)"
+                            title="Elimina">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div *ngIf="filteredClienti.length > itemsPerPage" class="d-flex justify-content-between align-items-center p-3 border-top">
+            <div class="text-muted">
+              Mostrando {{ (currentPage - 1) * itemsPerPage + 1 }} -
+              {{ Math.min(currentPage * itemsPerPage, filteredClienti.length) }}
+              di {{ filteredClienti.length }} clienti
+            </div>
+            <nav>
+              <ul class="pagination pagination-sm mb-0">
+                <li class="page-item" [class.disabled]="currentPage === 1">
+                  <button class="page-link" (click)="goToPage(currentPage - 1)">
+                    <i class="fas fa-chevron-left"></i>
+                  </button>
+                </li>
+                <li class="page-item"
+                    *ngFor="let page of getPageNumbers()"
+                    [class.active]="page === currentPage">
+                  <button class="page-link" (click)="goToPage(page)">
+                    {{ page }}
+                  </button>
+                </li>
+                <li class="page-item" [class.disabled]="currentPage === totalPages">
+                  <button class="page-link" (click)="goToPage(currentPage + 1)">
+                    <i class="fas fa-chevron-right"></i>
+                  </button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bulk Actions -->
+      <div *ngIf="selectedClienti.length > 0" class="fixed-bottom-actions">
+        <div class="card border-0 shadow-lg">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="text-muted">
+                {{ selectedClienti.length }} clienti selezionati
+              </span>
+              <div class="btn-group">
+                <button class="btn btn-outline-primary" (click)="exportSelected()">
+                  <i class="fas fa-download"></i>
+                  <span class="ms-2">Esporta</span>
+                </button>
+                <button class="btn btn-outline-danger" (click)="deleteSelected()">
+                  <i class="fas fa-trash"></i>
+                  <span class="ms-2">Elimina Selezionati</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Sidebar -->
+<!--<app-sidebar [routes]="sidebarRoutes"></app-sidebar>-->

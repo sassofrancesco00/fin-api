@@ -1,1 +1,363 @@
-<p>cliente-form works!</p>
+<!-- Loading Spinner -->
+<div *ngIf="loading" class="loading-wrapper d-flex justify-content-center align-items-center" style="height: 100vh;">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Caricamento...</span>
+  </div>
+</div>
+
+<!-- Form Content -->
+<div *ngIf="!loading" class="form-wrapper">
+  <!-- Header Section -->
+  <div class="form-header">
+    <div class="container-fluid">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <div class="breadcrumb-section">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a [routerLink]="['/dashboard']">Dashboard</a>
+                </li>
+                <li class="breadcrumb-item">
+                  <a [routerLink]="['/clienti']">Clienti</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                  {{ isEditMode ? 'Modifica Cliente' : 'Nuovo Cliente' }}
+                </li>
+              </ol>
+            </nav>
+            <h1 class="page-title">
+              <i class="fas fa-user-{{ isEditMode ? 'edit' : 'plus' }} text-primary me-2"></i>
+              {{ isEditMode ? 'Modifica Cliente' : 'Nuovo Cliente' }}
+            </h1>
+          </div>
+        </div>
+        <div class="col-md-4 text-end">
+          <button
+            type="button"
+            class="btn btn-outline-secondary me-2"
+            [routerLink]="['/clienti']">
+            <i class="fas fa-arrow-left"></i>
+            <span class="ms-2">Torna alla Lista</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Form -->
+  <div class="form-content">
+    <div class="container-fluid">
+      <form [formGroup]="clienteForm" (ngSubmit)="onSubmit()" novalidate>
+        <div class="row">
+          <!-- Form Card -->
+          <div class="col-xl-8 col-lg-7">
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-transparent border-0 pt-4">
+                <h5 class="mb-0">
+                  <i class="fas fa-user-circle text-primary me-2"></i>
+                  Informazioni Cliente
+                </h5>
+              </div>
+              <div class="card-body">
+                <!-- Nome e Cognome -->
+                <div class="row g-3 mb-3">
+                  <div class="col-md-6">
+                    <label for="nome" class="form-label">
+                      Nome <span class="text-danger">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="nome"
+                      formControlName="nome"
+                      [class.is-invalid]="isFieldInvalid('nome')"
+                      placeholder="Inserisci il nome"
+                      maxlength="50">
+                    <div class="invalid-feedback">
+                      <div *ngIf="clienteForm.get('nome')?.errors?.['required']">
+                        Il nome è obbligatorio
+                      </div>
+                      <div *ngIf="clienteForm.get('nome')?.errors?.['minlength']">
+                        Il nome deve essere di almeno 2 caratteri
+                      </div>
+                      <div *ngIf="clienteForm.get('nome')?.errors?.['pattern']">
+                        Il nome può contenere solo lettere, spazi e apostrofi
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <label for="cognome" class="form-label">
+                      Cognome <span class="text-danger">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="cognome"
+                      formControlName="cognome"
+                      [class.is-invalid]="isFieldInvalid('cognome')"
+                      placeholder="Inserisci il cognome"
+                      maxlength="50">
+                    <div class="invalid-feedback">
+                      <div *ngIf="clienteForm.get('cognome')?.errors?.['required']">
+                        Il cognome è obbligatorio
+                      </div>
+                      <div *ngIf="clienteForm.get('cognome')?.errors?.['minlength']">
+                        Il cognome deve essere di almeno 2 caratteri
+                      </div>
+                      <div *ngIf="clienteForm.get('cognome')?.errors?.['pattern']">
+                        Il cognome può contenere solo lettere, spazi e apostrofi
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Codice Fiscale -->
+                <div class="row g-3 mb-3">
+                  <div class="col-md-6">
+                    <label for="codiceFiscale" class="form-label">
+                      Codice Fiscale <span class="text-danger">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="codiceFiscale"
+                      formControlName="codiceFiscale"
+                      [class.is-invalid]="isFieldInvalid('codiceFiscale')"
+                      placeholder="RSSMRA80A01H501X"
+                      maxlength="16"
+                      style="text-transform: uppercase;">
+                    <div class="invalid-feedback">
+                      <div *ngIf="clienteForm.get('codiceFiscale')?.errors?.['required']">
+                        Il codice fiscale è obbligatorio
+                      </div>
+                      <div *ngIf="clienteForm.get('codiceFiscale')?.errors?.['pattern']">
+                        Il codice fiscale non è valido
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <label for="telefono" class="form-label">
+                      Telefono <span class="text-danger">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      class="form-control"
+                      id="telefono"
+                      formControlName="telefono"
+                      [class.is-invalid]="isFieldInvalid('telefono')"
+                      placeholder="333 123 4567"
+                      maxlength="15">
+                    <div class="invalid-feedback">
+                      <div *ngIf="clienteForm.get('telefono')?.errors?.['required']">
+                        Il telefono è obbligatorio
+                      </div>
+                      <div *ngIf="clienteForm.get('telefono')?.errors?.['pattern']">
+                        Il formato del telefono non è valido
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Email -->
+                <div class="row g-3 mb-3">
+                  <div class="col-12">
+                    <label for="email" class="form-label">
+                      Email <span class="text-danger">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="email"
+                      formControlName="email"
+                      [class.is-invalid]="isFieldInvalid('email')"
+                      placeholder="nome.cognome@email.it">
+                    <div class="invalid-feedback">
+                      <div *ngIf="clienteForm.get('email')?.errors?.['required']">
+                        L'email è obbligatoria
+                      </div>
+                      <div *ngIf="clienteForm.get('email')?.errors?.['email']">
+                        Il formato dell'email non è valido
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Data di Nascita e Luogo -->
+                <div class="row g-3 mb-3">
+                  <div class="col-md-6">
+                    <label for="dataNascita" class="form-label">
+                      Data di Nascita
+                    </label>
+                    <input
+                      type="date"
+                      class="form-control"
+                      id="dataNascita"
+                      formControlName="dataNascita"
+                      [class.is-invalid]="isFieldInvalid('dataNascita')">
+                    <div class="invalid-feedback">
+                      <div *ngIf="clienteForm.get('dataNascita')?.errors?.['invalidDate']">
+                        La data di nascita non può essere futura
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <label for="luogoNascita" class="form-label">
+                      Luogo di Nascita
+                    </label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="luogoNascita"
+                      formControlName="luogoNascita"
+                      placeholder="Roma (RM)"
+                      maxlength="100">
+                  </div>
+                </div>
+
+                <!-- Indirizzo -->
+                <div class="row g-3 mb-3">
+                  <div class="col-md-8">
+                    <label for="indirizzo" class="form-label">
+                      Indirizzo
+                    </label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="indirizzo"
+                      formControlName="indirizzo"
+                      placeholder="Via Roma, 123"
+                      maxlength="200">
+                  </div>
+
+                  <div class="col-md-4">
+                    <label for="cap" class="form-label">
+                      CAP
+                    </label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="cap"
+                      formControlName="cap"
+                      placeholder="00100"
+                      maxlength="5">
+                  </div>
+                </div>
+
+                <!-- Città e Provincia -->
+                <div class="row g-3 mb-4">
+                  <div class="col-md-8">
+                    <label for="citta" class="form-label">
+                      Città
+                    </label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="citta"
+                      formControlName="citta"
+                      placeholder="Roma"
+                      maxlength="100">
+                  </div>
+
+                  <div class="col-md-4">
+                    <label for="provincia" class="form-label">
+                      Provincia
+                    </label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="provincia"
+                      formControlName="provincia"
+                      placeholder="RM"
+                      maxlength="2"
+                      style="text-transform: uppercase;">
+                  </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="d-flex justify-content-end gap-2">
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    [routerLink]="['/clienti']">
+                    <i class="fas fa-times me-1"></i>
+                    Annulla
+                  </button>
+                  <button
+                    type="submit"
+                    class="btn btn-primary"
+                    [disabled]="clienteForm.invalid || saving">
+                    <i class="fas fa-spinner fa-spin me-1" *ngIf="saving"></i>
+                    <i class="fas fa-save me-1" *ngIf="!saving"></i>
+                    {{ saving ? 'Salvataggio...' : (isEditMode ? 'Aggiorna' : 'Crea Cliente') }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Info Card -->
+          <div class="col-xl-4 col-lg-5">
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-transparent border-0 pt-4">
+                <h5 class="mb-0">
+                  <i class="fas fa-info-circle text-info me-2"></i>
+                  Informazioni
+                </h5>
+              </div>
+              <div class="card-body">
+                <div class="info-item mb-3">
+                  <h6 class="text-muted mb-1">Campi Obbligatori</h6>
+                  <ul class="list-unstyled small">
+                    <li><i class="fas fa-check text-success me-1"></i> Nome</li>
+                    <li><i class="fas fa-check text-success me-1"></i> Cognome</li>
+                    <li><i class="fas fa-check text-success me-1"></i> Codice Fiscale</li>
+                    <li><i class="fas fa-check text-success me-1"></i> Telefono</li>
+                    <li><i class="fas fa-check text-success me-1"></i> Email</li>
+                  </ul>
+                </div>
+
+                <div class="info-item mb-3">
+                  <h6 class="text-muted mb-1">Formato Codice Fiscale</h6>
+                  <p class="small mb-0">
+                    16 caratteri: 6 lettere + 2 cifre + 1 lettera + 2 cifre + 1 lettera + 3 cifre + 1 lettera
+                  </p>
+                </div>
+
+                <div class="info-item">
+                  <h6 class="text-muted mb-1">Formato Telefono</h6>
+                  <p class="small mb-0">
+                    Formati accettati: 333 123 4567, 3331234567, +39 333 123 4567
+                  </p>
+                </div>
+
+                <div *ngIf="isEditMode" class="info-item mt-4">
+                  <h6 class="text-muted mb-1">Ultima Modifica</h6>
+                  <p class="small mb-0">
+                    {{ lastModified | date:'dd/MM/yyyy HH:mm' }}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Success/Error Messages -->
+            <div *ngIf="successMessage" class="alert alert-success mt-3" role="alert">
+              <i class="fas fa-check-circle me-2"></i>
+              {{ successMessage }}
+            </div>
+
+            <div *ngIf="errorMessage" class="alert alert-danger mt-3" role="alert">
+              <i class="fas fa-exclamation-circle me-2"></i>
+              {{ errorMessage }}
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Include sidebar -->
