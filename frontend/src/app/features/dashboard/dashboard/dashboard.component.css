@@ -28,6 +28,7 @@
 }
 
 .dashboard-wrapper {
+  flex-grow: 1;
   min-height: 100vh;
   background: linear-gradient(135deg, var(--fb-secondary) 0%, var(--fb-gray-100) 100%);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -40,7 +41,7 @@
   padding: 1.5rem 0;
   margin-bottom: 2rem;
   box-shadow: var(--fb-shadow);
-  position: sticky;
+  position: relative;
   top: 0;
   z-index: 100;
 }

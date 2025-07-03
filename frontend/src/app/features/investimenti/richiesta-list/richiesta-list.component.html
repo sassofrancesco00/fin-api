@@ -1,1 +1,399 @@
-<p>richiesta-list works!</p>
+<!--&lt;!&ndash; Loading Spinner &ndash;&gt;-->
+<!--<div *ngIf="loading" class="loading-wrapper d-flex justify-content-center align-items-center" style="height: 100vh;">-->
+<!--  <div class="spinner-border text-primary" role="status">-->
+<!--    <span class="visually-hidden">Caricamento...</span>-->
+<!--  </div>-->
+<!--</div>-->
+
+<!--&lt;!&ndash; Main Content &ndash;&gt;-->
+<!--<div *ngIf="!loading" class="richieste-wrapper">-->
+<!--  &lt;!&ndash; Header Section &ndash;&gt;-->
+<!--  <div class="richieste-header">-->
+<!--    <div class="container-fluid">-->
+<!--      <div class="row align-items-center">-->
+<!--        <div class="col-md-8">-->
+<!--          <div class="page-title-section">-->
+<!--            <h1 class="page-title">-->
+<!--              <i class="fas fa-chart-line text-primary me-2"></i>-->
+<!--              Richieste di Investimento-->
+<!--            </h1>-->
+<!--            <p class="text-muted">Gestisci le richieste di investimento dei tuoi clienti</p>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div class="col-md-4 text-end">-->
+<!--          <button class="btn btn-primary me-2" (click)="openNewRichiestaModal()">-->
+<!--            <i class="fas fa-plus me-2"></i>-->
+<!--            Nuova Richiesta-->
+<!--          </button>-->
+<!--          <button class="btn btn-outline-primary" (click)="refreshData()">-->
+<!--            <i class="fas fa-sync-alt me-2"></i>-->
+<!--            Aggiorna-->
+<!--          </button>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+
+<!--  &lt;!&ndash; Stats Cards &ndash;&gt;-->
+<!--  <div class="container-fluid mb-4">-->
+<!--    <div class="row g-4">-->
+<!--      <div class="col-xl-3 col-md-6">-->
+<!--        <div class="card stat-card border-0 shadow-sm">-->
+<!--          <div class="card-body">-->
+<!--            <div class="d-flex justify-content-between align-items-start">-->
+<!--              <div class="stat-info">-->
+<!--                <h6 class="text-muted mb-2">Totale Richieste</h6>-->
+<!--                <h3 class="mb-0 fw-bold text-primary">{{ filteredRichieste.length }}</h3>-->
+<!--              </div>-->
+<!--              <div class="stat-icon bg-primary bg-opacity-10 p-3 rounded">-->
+<!--                <i class="fas fa-chart-line text-primary"></i>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--      <div class="col-xl-3 col-md-6">-->
+<!--        <div class="card stat-card border-0 shadow-sm">-->
+<!--          <div class="card-body">-->
+<!--            <div class="d-flex justify-content-between align-items-start">-->
+<!--              <div class="stat-info">-->
+<!--                <h6 class="text-muted mb-2">In Revisione</h6>-->
+<!--                <h3 class="mb-0 fw-bold text-warning">{{ getRichiesteByStato('in_revisione').length }}</h3>-->
+<!--              </div>-->
+<!--              <div class="stat-icon bg-warning bg-opacity-10 p-3 rounded">-->
+<!--                <i class="fas fa-clock text-warning"></i>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--      <div class="col-xl-3 col-md-6">-->
+<!--        <div class="card stat-card border-0 shadow-sm">-->
+<!--          <div class="card-body">-->
+<!--            <div class="d-flex justify-content-between align-items-start">-->
+<!--              <div class="stat-info">-->
+<!--                <h6 class="text-muted mb-2">Approvate</h6>-->
+<!--                <h3 class="mb-0 fw-bold text-success">{{ getRichiesteByStato('Approvata').length }}</h3>-->
+<!--              </div>-->
+<!--              <div class="stat-icon bg-success bg-opacity-10 p-3 rounded">-->
+<!--                <i class="fas fa-check text-success"></i>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--      <div class="col-xl-3 col-md-6">-->
+<!--        <div class="card stat-card border-0 shadow-sm">-->
+<!--          <div class="card-body">-->
+<!--            <div class="d-flex justify-content-between align-items-start">-->
+<!--              <div class="stat-info">-->
+<!--                <h6 class="text-muted mb-2">Volume Totale</h6>-->
+<!--                <h3 class="mb-0 fw-bold text-info">{{ calculateTotalVolume() | currency:'EUR':'symbol':'1.0-0':'it' }}</h3>-->
+<!--              </div>-->
+<!--              <div class="stat-icon bg-info bg-opacity-10 p-3 rounded">-->
+<!--                <i class="fas fa-euro-sign text-info"></i>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+
+<!--  &lt;!&ndash; Filters and Search &ndash;&gt;-->
+<!--  <div class="container-fluid mb-4">-->
+<!--    <div class="card border-0 shadow-sm">-->
+<!--      <div class="card-body">-->
+<!--        <div class="row g-3">-->
+<!--          <div class="col-md-4">-->
+<!--            <div class="form-floating">-->
+<!--              <input type="text" class="form-control" id="searchInput" placeholder="Cerca..."-->
+<!--                     [(ngModel)]="searchTerm" (input)="applyFilters()">-->
+<!--              <label for="searchInput">-->
+<!--                <i class="fas fa-search me-2"></i>Cerca cliente o richiesta-->
+<!--              </label>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <div class="col-md-2">-->
+<!--            <div class="form-floating">-->
+<!--              <select class="form-select" id="statoFilter" [(ngModel)]="selectedStato" (change)="applyFilters()">-->
+<!--                <option value="">Tutti gli stati</option>-->
+<!--                <option value="in_revisione">In Revisione</option>-->
+<!--                <option value="Approvata">Approvata</option>-->
+<!--                <option value="Respinta">Respinta</option>-->
+<!--              </select>-->
+<!--              <label for="statoFilter">Stato</label>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <div class="col-md-2">-->
+<!--            <div class="form-floating">-->
+<!--              <select class="form-select" id="tipoFilter" [(ngModel)]="selectedTipo" (change)="applyFilters()">-->
+<!--                <option value="">Tutti i tipi</option>-->
+<!--                <option value="Azioni">Azioni</option>-->
+<!--                <option value="Obbligazioni">Obbligazioni</option>-->
+<!--                <option value="ETF">ETF</option>-->
+<!--              </select>-->
+<!--              <label for="tipoFilter">Tipo Investimento</label>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <div class="col-md-2">-->
+<!--            <div class="form-floating">-->
+<!--              <input type="date" class="form-control" id="dataInizioFilter"-->
+<!--                     [(ngModel)]="dataInizioFilter" (change)="applyFilters()">-->
+<!--              <label for="dataInizioFilter">Data Inizio</label>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <div class="col-md-2">-->
+<!--            <div class="form-floating">-->
+<!--              <input type="date" class="form-control" id="dataFineFilter"-->
+<!--                     [(ngModel)]="dataFineFilter" (change)="applyFilters()">-->
+<!--              <label for="dataFineFilter">Data Fine</label>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+
+<!--  &lt;!&ndash; Table Section &ndash;&gt;-->
+<!--  <div class="container-fluid">-->
+<!--    <div class="card border-0 shadow-sm">-->
+<!--      <div class="card-header bg-transparent border-0 pt-4">-->
+<!--        <div class="d-flex justify-content-between align-items-center">-->
+<!--          <h5 class="mb-0">Elenco Richieste ({{ filteredRichieste.length }})</h5>-->
+<!--          <div class="d-flex gap-2">-->
+<!--            <button class="btn btn-sm btn-outline-secondary" (click)="exportToExcel()">-->
+<!--              <i class="fas fa-file-excel me-1"></i>-->
+<!--              Esporta Excel-->
+<!--            </button>-->
+<!--            <button class="btn btn-sm btn-outline-primary" (click)="exportToPDF()">-->
+<!--              <i class="fas fa-file-pdf me-1"></i>-->
+<!--              Esporta PDF-->
+<!--            </button>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--      <div class="card-body">-->
+<!--        <div class="table-responsive">-->
+<!--          <table class="table table-hover">-->
+<!--            <thead>-->
+<!--            <tr>-->
+<!--              <th scope="col" class="sortable" (click)="sortBy('cliente.cognome')">-->
+<!--                Cliente-->
+<!--                <i class="fas fa-sort ms-1" [class.fa-sort-up]="sortField === 'cliente.cognome' && sortDirection === 'asc'"-->
+<!--                   [class.fa-sort-down]="sortField === 'cliente.cognome' && sortDirection === 'desc'"></i>-->
+<!--              </th>-->
+<!--              <th scope="col" class="sortable" (click)="sortBy('importo')">-->
+<!--                Importo-->
+<!--                <i class="fas fa-sort ms-1" [class.fa-sort-up]="sortField === 'importo' && sortDirection === 'asc'"-->
+<!--                   [class.fa-sort-down]="sortField === 'importo' && sortDirection === 'desc'"></i>-->
+<!--              </th>-->
+<!--              <th scope="col">Tipo Investimento</th>-->
+<!--              <th scope="col" class="sortable" (click)="sortBy('dataInserimento')">-->
+<!--                Data Richiesta-->
+<!--                <i class="fas fa-sort ms-1" [class.fa-sort-up]="sortField === 'dataInserimento' && sortDirection === 'asc'"-->
+<!--                   [class.fa-sort-down]="sortField === 'dataInserimento' && sortDirection === 'desc'"></i>-->
+<!--              </th>-->
+<!--              <th scope="col">Stato</th>-->
+<!--              <th scope="col">Consulente</th>-->
+<!--              <th scope="col" class="text-center">Azioni</th>-->
+<!--            </tr>-->
+<!--            </thead>-->
+<!--            <tbody>-->
+<!--            <tr *ngFor="let richiesta of paginatedRichieste; let i = index" [class.table-active]="selectedRichiesta?.id === richiesta.id">-->
+<!--              <td>-->
+<!--                <div class="d-flex align-items-center">-->
+<!--                  <div class="avatar-circle me-3">-->
+<!--                    {{ getInitials(richiesta.cliente?.nome + ' ' + richiesta.cliente?.cognome) }}-->
+<!--                  </div>-->
+<!--                  <div>-->
+<!--                    <h6 class="mb-0">{{ richiesta.cliente?.nome }} {{ richiesta.cliente?.cognome }}</h6>-->
+<!--                    <small class="text-muted">{{ richiesta.cliente?.email }}</small>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </td>-->
+<!--              <td>-->
+<!--                <span class="fw-bold">{{ richiesta.importo | currency:'EUR':'symbol':'1.0-0':'it' }}</span>-->
+<!--              </td>-->
+<!--              <td>-->
+<!--                  <span class="badge badge-type" [ngClass]="getTipoClass(richiesta.tipoInvestimento)">-->
+<!--                    {{ richiesta.tipoInvestimento }}-->
+<!--                  </span>-->
+<!--              </td>-->
+<!--              <td>-->
+<!--                <span>{{ richiesta.dataInserimento | date:'dd/MM/yyyy' }}</span>-->
+<!--                <br>-->
+<!--                <small class="text-muted">{{ richiesta.dataInserimento | date:'HH:mm' }}</small>-->
+<!--              </td>-->
+<!--              <td>-->
+<!--                  <span class="badge" [ngClass]="getStatoClass(richiesta.stato)">-->
+<!--                    {{ richiesta.stato === 'in_revisione' ? 'In Revisione' : richiesta.stato }}-->
+<!--                  </span>-->
+<!--              </td>-->
+<!--              <td>-->
+<!--                <span>{{ richiesta.user?.firstname }} {{ richiesta.user?.lastname }}</span>-->
+<!--                <br>-->
+<!--                <small class="text-muted">{{ richiesta.user?.ruolo }}</small>-->
+<!--              </td>-->
+<!--              <td class="text-center">-->
+<!--                <div class="dropdown">-->
+<!--                  <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"-->
+<!--                          data-bs-toggle="dropdown" aria-expanded="false">-->
+<!--                    <i class="fas fa-ellipsis-v"></i>-->
+<!--                  </button>-->
+<!--                  <ul class="dropdown-menu">-->
+<!--                    <li>-->
+<!--                      <a class="dropdown-item" href="#" (click)="viewRichiesta(richiesta)">-->
+<!--                        <i class="fas fa-eye me-2"></i>Visualizza-->
+<!--                      </a>-->
+<!--                    </li>-->
+<!--                    <li>-->
+<!--                      <a class="dropdown-item" href="#" (click)="editRichiesta(richiesta)">-->
+<!--                        <i class="fas fa-edit me-2"></i>Modifica-->
+<!--                      </a>-->
+<!--                    </li>-->
+<!--                    <li *ngIf="richiesta.stato === 'in_revisione' && canApprove()">-->
+<!--                      <a class="dropdown-item text-success" href="#" (click)="approveRichiesta(richiesta)">-->
+<!--                        <i class="fas fa-check me-2"></i>Approva-->
+<!--                      </a>-->
+<!--                    </li>-->
+<!--                    <li *ngIf="richiesta.stato === 'in_revisione' && canApprove()">-->
+<!--                      <a class="dropdown-item text-danger" href="#" (click)="rejectRichiesta(richiesta)">-->
+<!--                        <i class="fas fa-times me-2"></i>Rifiuta-->
+<!--                      </a>-->
+<!--                    </li>-->
+<!--                    <li><hr class="dropdown-divider"></li>-->
+<!--                    <li>-->
+<!--                      <a class="dropdown-item" href="#" (click)="addNota(richiesta)">-->
+<!--                        <i class="fas fa-sticky-note me-2"></i>Aggiungi Nota-->
+<!--                      </a>-->
+<!--                    </li>-->
+<!--                    <li>-->
+<!--                      <a class="dropdown-item text-danger" href="#" (click)="deleteRichiesta(richiesta)">-->
+<!--                        <i class="fas fa-trash me-2"></i>Elimina-->
+<!--                      </a>-->
+<!--                    </li>-->
+<!--                  </ul>-->
+<!--                </div>-->
+<!--              </td>-->
+<!--            </tr>-->
+<!--            </tbody>-->
+<!--          </table>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; Empty State &ndash;&gt;-->
+<!--        <div *ngIf="filteredRichieste.length === 0" class="text-center py-5">-->
+<!--          <i class="fas fa-inbox fa-3x text-muted mb-3"></i>-->
+<!--          <h5 class="text-muted">Nessuna richiesta trovata</h5>-->
+<!--          <p class="text-muted">Non ci sono richieste che corrispondono ai criteri di ricerca.</p>-->
+<!--          <button class="btn btn-primary" (click)="clearFilters()">-->
+<!--            <i class="fas fa-times me-2"></i>Rimuovi Filtri-->
+<!--          </button>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; Pagination &ndash;&gt;-->
+<!--        <div *ngIf="filteredRichieste.length > 0" class="d-flex justify-content-between align-items-center mt-4">-->
+<!--          <div class="d-flex align-items-center">-->
+<!--            <label class="me-2">Mostra:</label>-->
+<!--            <select class="form-select form-select-sm" style="width: auto;" [(ngModel)]="pageSize" (change)="updatePagination()">-->
+<!--              <option value="10">10</option>-->
+<!--              <option value="25">25</option>-->
+<!--              <option value="50">50</option>-->
+<!--              <option value="100">100</option>-->
+<!--            </select>-->
+<!--            <span class="ms-2 text-muted">elementi per pagina</span>-->
+<!--          </div>-->
+
+<!--          <div class="pagination-info">-->
+<!--            <span class="text-muted">-->
+<!--              Mostra {{ (currentPage - 1) * pageSize + 1 }} - {{ Math.min(currentPage * pageSize, filteredRichieste.length) }}-->
+<!--              di {{ filteredRichieste.length }} richieste-->
+<!--            </span>-->
+<!--          </div>-->
+
+<!--          <nav aria-label="Page navigation">-->
+<!--            <ul class="pagination pagination-sm mb-0">-->
+<!--              <li class="page-item" [class.disabled]="currentPage === 1">-->
+<!--                <a class="page-link" href="#" (click)="goToPage(currentPage - 1)">-->
+<!--                  <i class="fas fa-chevron-left"></i>-->
+<!--                </a>-->
+<!--              </li>-->
+<!--              <li class="page-item" *ngFor="let page of getPageNumbers()" [class.active]="page === currentPage">-->
+<!--                <a class="page-link" href="#" (click)="goToPage(page)">{{ page }}</a>-->
+<!--              </li>-->
+<!--              <li class="page-item" [class.disabled]="currentPage === totalPages">-->
+<!--                <a class="page-link" href="#" (click)="goToPage(currentPage + 1)">-->
+<!--                  <i class="fas fa-chevron-right"></i>-->
+<!--                </a>-->
+<!--              </li>-->
+<!--            </ul>-->
+<!--          </nav>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+
+<!--&lt;!&ndash; Sidebar &ndash;&gt;-->
+<!--<app-sidebar [routes]="sidebarRoutes"></app-sidebar>-->
+
+<!--&lt;!&ndash; Modals &ndash;&gt;-->
+<!--&lt;!&ndash; View Richiesta Modal &ndash;&gt;-->
+<!--<div class="modal fade" id="viewRichiestaModal" tabindex="-1" aria-labelledby="viewRichiestaModalLabel" aria-hidden="true">-->
+<!--  <div class="modal-dialog modal-lg">-->
+<!--    <div class="modal-content">-->
+<!--      <div class="modal-header">-->
+<!--        <h5 class="modal-title" id="viewRichiestaModalLabel">Dettagli Richiesta</h5>-->
+<!--        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--      </div>-->
+<!--      <div class="modal-body" *ngIf="selectedRichiesta">-->
+<!--        <div class="row">-->
+<!--          <div class="col-md-6">-->
+<!--            <h6>Informazioni Cliente</h6>-->
+<!--            <p><strong>Nome:</strong> {{ selectedRichiesta.cliente?.nome }} {{ selectedRichiesta.cliente?.cognome }}</p>-->
+<!--            <p><strong>Email:</strong> {{ selectedRichiesta.cliente?.email }}</p>-->
+<!--            <p><strong>Telefono:</strong> {{ selectedRichiesta.cliente?.telefono }}</p>-->
+<!--          </div>-->
+<!--          <div class="col-md-6">-->
+<!--            <h6>Dettagli Richiesta</h6>-->
+<!--            <p><strong>Importo:</strong> {{ selectedRichiesta.importo | currency:'EUR':'symbol':'1.0-0':'it' }}</p>-->
+<!--            <p><strong>Tipo:</strong> {{ selectedRichiesta.tipoInvestimento }}</p>-->
+<!--            <p><strong>Data:</strong> {{ selectedRichiesta.dataInserimento | date:'dd/MM/yyyy HH:mm' }}</p>-->
+<!--            <p><strong>Stato:</strong>-->
+<!--              <span class="badge" [ngClass]="getStatoClass(selectedRichiesta.stato)">-->
+<!--                {{ selectedRichiesta.stato === 'in_revisione' ? 'In Revisione' : selectedRichiesta.stato }}-->
+<!--              </span>-->
+<!--            </p>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--        <div *ngIf="selectedRichiesta.motivazioneRespinta" class="mt-3">-->
+<!--          <h6>Motivazione Rifiuto</h6>-->
+<!--          <div class="alert alert-danger">{{ selectedRichiesta.motivazioneRespinta }}</div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+
+<!--&lt;!&ndash; Reject Modal &ndash;&gt;-->
+<!--<div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">-->
+<!--  <div class="modal-dialog">-->
+<!--    <div class="modal-content">-->
+<!--      <div class="modal-header">-->
+<!--        <h5 class="modal-title" id="rejectModalLabel">Rifiuta Richiesta</h5>-->
+<!--        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--      </div>-->
+<!--      <div class="modal-body">-->
+<!--        <div class="form-floating">-->
+<!--          <textarea class="form-control" placeholder="Inserisci la motivazione del rifiuto..."-->
+<!--                    id="motivazioneRifiuto" style="height: 100px" [(ngModel)]="motivazioneRifiuto"></textarea>-->
+<!--          <label for="motivazioneRifiuto">Motivazione rifiuto</label>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--      <div class="modal-footer">-->
+<!--        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>-->
+<!--        <button type="button" class="btn btn-danger" (click)="confirmReject()">Rifiuta Richiesta</button>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
