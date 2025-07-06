@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './core/guards/auth.guard';
 import { LoginComponent } from './features/auth/login/login.component';
+import { RegisterComponent } from './features/auth/register/register.component';
 import { DashboardComponent } from './features/dashboard/dashboard/dashboard.component';
 import { ClienteFormComponent } from './features/clienti/cliente-form/cliente-form.component';
 import { PolizzaListComponent } from './features/polizze/polizza-list/polizza-list.component';
@@ -14,6 +15,7 @@ const routes: Routes = [
 
   // AUTHENTICATION
   { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
 
   // DASHBOARD
   { path: 'dashboard', component: DashboardComponent },

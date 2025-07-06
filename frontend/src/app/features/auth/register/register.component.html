@@ -1,0 +1,341 @@
+<!-- register.component.html -->
+<div class="register-container">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-10 col-xl-8">
+        <div class="glass-card">
+          <div class="row g-0">
+
+            <!-- Brand Section - Left Side -->
+            <div class="col-lg-6 d-none d-lg-block">
+              <div class="brand-section h-100 p-5 d-flex flex-column justify-content-center position-relative">
+
+                <!-- Logo -->
+                <div class="text-center mb-4">
+                  <div class="logo-icon">
+                    <i class="fas fa-chart-line fa-2x text-white"></i>
+                  </div>
+                  <h1 class="fw-bold mb-2">FinAPI</h1>
+                  <p class="opacity-75 mb-0">Sistema di gestione digitale</p>
+                  <p class="opacity-75">delle pratiche finanziarie</p>
+                </div>
+
+                <!-- Benefits -->
+                <div class="features-grid">
+                  <div class="feature-card text-center">
+                    <div class="feature-icon mb-3">
+                      <i class="fas fa-user-plus fa-2x"></i>
+                    </div>
+                    <h6 class="fw-semibold mb-2">Registrazione Rapida</h6>
+                    <small class="opacity-75">Attivazione immediata del tuo account</small>
+                  </div>
+
+                  <div class="feature-card text-center">
+                    <div class="feature-icon mb-3">
+                      <i class="fas fa-lock fa-2x"></i>
+                    </div>
+                    <h6 class="fw-semibold mb-2">Dati Protetti</h6>
+                    <small class="opacity-75">Crittografia avanzata per la tua sicurezza</small>
+                  </div>
+
+                  <div class="feature-card text-center">
+                    <div class="feature-icon mb-3">
+                      <i class="fas fa-rocket fa-2x"></i>
+                    </div>
+                    <h6 class="fw-semibold mb-2">Accesso Completo</h6>
+                    <small class="opacity-75">Tutte le funzionalità dal primo giorno</small>
+                  </div>
+                </div>
+
+                <!-- Bottom Stats -->
+                <div class="row text-center mt-4">
+                  <div class="col-4">
+                    <div class="stat-item">
+                      <h4 class="fw-bold mb-1">24/7</h4>
+                      <small class="opacity-75">Supporto</small>
+                    </div>
+                  </div>
+                  <div class="col-4">
+                    <div class="stat-item">
+                      <h4 class="fw-bold mb-1">5min</h4>
+                      <small class="opacity-75">Setup</small>
+                    </div>
+                  </div>
+                  <div class="col-4">
+                    <div class="stat-item">
+                      <h4 class="fw-bold mb-1">0€</h4>
+                      <small class="opacity-75">Costi</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Form Section - Right Side -->
+            <div class="col-lg-6">
+              <div class="form-section h-100 p-5 d-flex flex-column justify-content-center">
+
+                <!-- Mobile Header -->
+                <div class="text-center mb-4 d-lg-none">
+                  <div class="logo-icon-mobile mb-3">
+                    <i class="fas fa-chart-line fa-2x text-primary"></i>
+                  </div>
+                  <h2 class="fw-bold text-primary">FinAPI</h2>
+                  <p class="text-muted">Crea il tuo account</p>
+                </div>
+
+                <!-- Desktop Header -->
+                <div class="text-center mb-4 d-none d-lg-block">
+                  <h2 class="fw-bold text-dark mb-2">Registrati ora!</h2>
+                  <p class="text-muted">Crea il tuo account per iniziare</p>
+                </div>
+
+                <!-- Success Alert -->
+                <div *ngIf="success" class="alert alert-success alert-modern mb-4" role="alert">
+                  <div class="d-flex align-items-center">
+                    <i class="fas fa-check-circle me-3 fa-lg"></i>
+                    <div>
+                      <strong>Registrazione completata!</strong><br>
+                      <small>{{ success }}</small>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Error Alert -->
+                <div *ngIf="error" class="alert alert-danger alert-modern mb-4" role="alert">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                      <i class="fas fa-exclamation-triangle me-3 fa-lg"></i>
+                      <div>
+                        <strong>Errore di registrazione</strong><br>
+                        <small>{{ error }}</small>
+                      </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white"
+                            (click)="clearError()" aria-label="Chiudi"></button>
+                  </div>
+                </div>
+
+                <!-- Registration Form -->
+                <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="needs-validation" novalidate>
+
+                  <!-- First Name & Last Name Row -->
+                  <div class="row mb-4">
+                    <div class="col-md-6">
+                      <div class="form-floating">
+                        <input
+                          type="text"
+                          class="form-control form-control-modern"
+                          id="firstname"
+                          formControlName="firstname"
+                          placeholder="Nome"
+                          autocomplete="given-name"
+                          [class.is-invalid]="firstname?.invalid && firstname?.touched"
+                          [class.is-valid]="firstname?.valid && firstname?.touched">
+                        <label for="firstname">
+                          <i class="fas fa-user me-2"></i>Nome
+                        </label>
+                        <div *ngIf="firstname?.invalid && firstname?.touched" class="invalid-feedback">
+                          <div *ngIf="firstname?.errors?.['required']">
+                            <i class="fas fa-exclamation-circle me-1"></i>Il nome è obbligatorio
+                          </div>
+                          <div *ngIf="firstname?.errors?.['minlength']">
+                            <i class="fas fa-exclamation-circle me-1"></i>Minimo 2 caratteri
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-floating">
+                        <input
+                          type="text"
+                          class="form-control form-control-modern"
+                          id="lastname"
+                          formControlName="lastname"
+                          placeholder="Cognome"
+                          autocomplete="family-name"
+                          [class.is-invalid]="lastname?.invalid && lastname?.touched"
+                          [class.is-valid]="lastname?.valid && lastname?.touched">
+                        <label for="lastname">
+                          <i class="fas fa-user me-2"></i>Cognome
+                        </label>
+                        <div *ngIf="lastname?.invalid && lastname?.touched" class="invalid-feedback">
+                          <div *ngIf="lastname?.errors?.['required']">
+                            <i class="fas fa-exclamation-circle me-1"></i>Il cognome è obbligatorio
+                          </div>
+                          <div *ngIf="lastname?.errors?.['minlength']">
+                            <i class="fas fa-exclamation-circle me-1"></i>Minimo 2 caratteri
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Email Field -->
+                  <div class="form-floating mb-4">
+                    <input
+                      type="email"
+                      class="form-control form-control-modern"
+                      id="email"
+                      formControlName="email"
+                      placeholder="nome@esempio.com"
+                      autocomplete="email"
+                      [class.is-invalid]="email?.invalid && email?.touched"
+                      [class.is-valid]="email?.valid && email?.touched">
+                    <label for="email">
+                      <i class="fas fa-envelope me-2"></i>Indirizzo Email
+                    </label>
+                    <div class="input-group-text-modern">
+                      <i class="fas fa-at text-muted"></i>
+                    </div>
+                    <div *ngIf="email?.invalid && email?.touched" class="invalid-feedback">
+                      <div *ngIf="email?.errors?.['required']">
+                        <i class="fas fa-exclamation-circle me-1"></i>L'email è obbligatoria
+                      </div>
+                      <div *ngIf="email?.errors?.['email']">
+                        <i class="fas fa-exclamation-circle me-1"></i>Inserisci un'email valida
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Password Field -->
+                  <div class="form-floating mb-4 position-relative">
+                    <input
+                      [type]="showPassword ? 'text' : 'password'"
+                      class="form-control form-control-modern pe-5"
+                      id="password"
+                      formControlName="password"
+                      placeholder="Password"
+                      autocomplete="new-password"
+                      [class.is-invalid]="password?.invalid && password?.touched"
+                      [class.is-valid]="password?.valid && password?.touched">
+                    <label for="password">
+                      <i class="fas fa-lock me-2"></i>Password
+                    </label>
+
+                    <!-- Toggle Password Visibility -->
+                    <button type="button"
+                            class="btn btn-link position-absolute top-50 end-0 translate-middle-y me-2 p-1"
+                            (click)="togglePasswordVisibility()"
+                            style="z-index: 10; border: none; background: none;">
+                      <i class="fas" [class.fa-eye]="!showPassword" [class.fa-eye-slash]="showPassword"></i>
+                    </button>
+
+                    <div class="input-group-text-modern">
+                      <i class="fas fa-key text-muted"></i>
+                    </div>
+                    <div *ngIf="password?.invalid && password?.touched" class="invalid-feedback">
+                      <div *ngIf="password?.errors?.['required']">
+                        <i class="fas fa-exclamation-circle me-1"></i>La password è obbligatoria
+                      </div>
+                      <div *ngIf="password?.errors?.['minlength']">
+                        <i class="fas fa-exclamation-circle me-1"></i>Minimo 8 caratteri
+                      </div>
+                      <div *ngIf="password?.errors?.['pattern']">
+                        <i class="fas fa-exclamation-circle me-1"></i>Deve contenere almeno una lettera maiuscola, una minuscola e un numero
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Confirm Password Field -->
+                  <div class="form-floating mb-4 position-relative">
+                    <input
+                      [type]="showConfirmPassword ? 'text' : 'password'"
+                      class="form-control form-control-modern pe-5"
+                      id="confirmPassword"
+                      formControlName="confirmPassword"
+                      placeholder="Conferma Password"
+                      autocomplete="new-password"
+                      [class.is-invalid]="confirmPassword?.invalid && confirmPassword?.touched"
+                      [class.is-valid]="confirmPassword?.valid && confirmPassword?.touched">
+                    <label for="confirmPassword">
+                      <i class="fas fa-lock me-2"></i>Conferma Password
+                    </label>
+
+                    <!-- Toggle Password Visibility -->
+                    <button type="button"
+                            class="btn btn-link position-absolute top-50 end-0 translate-middle-y me-2 p-1"
+                            (click)="toggleConfirmPasswordVisibility()"
+                            style="z-index: 10; border: none; background: none;">
+                      <i class="fas" [class.fa-eye]="!showConfirmPassword" [class.fa-eye-slash]="showConfirmPassword"></i>
+                    </button>
+
+                    <div class="input-group-text-modern">
+                      <i class="fas fa-key text-muted"></i>
+                    </div>
+                    <div *ngIf="confirmPassword?.invalid && confirmPassword?.touched" class="invalid-feedback">
+                      <div *ngIf="confirmPassword?.errors?.['required']">
+                        <i class="fas fa-exclamation-circle me-1"></i>La conferma password è obbligatoria
+                      </div>
+                      <div *ngIf="confirmPassword?.errors?.['passwordMismatch']">
+                        <i class="fas fa-exclamation-circle me-1"></i>Le password non coincidono
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Terms and Conditions -->
+                  <div class="form-check mb-4">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           id="acceptTerms"
+                           formControlName="acceptTerms"
+                           [class.is-invalid]="acceptTerms?.invalid && acceptTerms?.touched">
+                    <label class="form-check-label text-muted" for="acceptTerms">
+                      Accetto i <a href="#" class="text-primary">Termini di Servizio</a> e la <a href="#" class="text-primary">Privacy Policy</a>
+                    </label>
+                    <div *ngIf="acceptTerms?.invalid && acceptTerms?.touched" class="invalid-feedback">
+                      <i class="fas fa-exclamation-circle me-1"></i>Devi accettare i termini e condizioni
+                    </div>
+                  </div>
+
+                  <!-- Submit Button -->
+                  <div class="d-grid mb-4">
+                    <button
+                      type="submit"
+                      class="btn btn-register btn-lg position-relative"
+                      [disabled]="loading || registerForm.invalid">
+
+                      <span *ngIf="!loading" class="btn-content">
+                        <i class="fas fa-user-plus me-2"></i>
+                        Crea Account
+                      </span>
+
+                      <span *ngIf="loading" class="btn-content">
+                        <div class="spinner-border spinner-border-sm me-2" role="status">
+                          <span class="visually-hidden">Caricamento...</span>
+                        </div>
+                        Creazione in corso...
+                      </span>
+                    </button>
+                  </div>
+
+                  <!-- Login Link -->
+                  <div class="text-center">
+                    <p class="text-muted small mb-0">
+                      Hai già un account?
+                      <a [routerLink]="['/login']" class="text-primary text-decoration-none ms-1">
+                        <i class="fas fa-sign-in-alt me-1"></i>Accedi qui
+                      </a>
+                    </p>
+                  </div>
+                </form>
+
+                <!-- Footer -->
+                <div class="text-center mt-4">
+                  <div class="security-badge mb-3">
+                    <i class="fas fa-shield-alt text-success me-2"></i>
+                    <small class="text-muted">Connessione sicura SSL</small>
+                  </div>
+                  <small class="text-muted d-block">
+                    Sistema riservato al personale autorizzato<br>
+                    © 2025 FinAPI. Tutti i diritti riservati.
+                  </small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
