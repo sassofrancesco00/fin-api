@@ -4,6 +4,7 @@ import com.tesi.francescosasso.finapi.fin_api.config.JwtService;
 import com.tesi.francescosasso.finapi.fin_api.domain.*;
 import com.tesi.francescosasso.finapi.fin_api.domain.security.Token;
 import com.tesi.francescosasso.finapi.fin_api.domain.security.TokenType;
+import com.tesi.francescosasso.finapi.fin_api.repo.RuoloRepo;
 import com.tesi.francescosasso.finapi.fin_api.repo.TokenRepository;
 import com.tesi.francescosasso.finapi.fin_api.repo.UserRepo;
 import com.tesi.francescosasso.finapi.fin_api.service.AuthenticationService;
@@ -15,11 +16,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final UserRepo repo;
+    private final RuoloRepo ruoloRepo;
     private final TokenRepository tokenRepo;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -29,12 +33,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public AuthenticationResponse register(RegisterRequest request) {
+        Optional<Ruolo> currentRole = ruoloRepo.findByCodice(request.getRuoloCode());
         var user = User.builder()
                 .firstname(request.getFirstname())
                 .lastname(request.getLastname())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
+                .ruolo(currentRole.orElse(null))
                 .build();
         var savedUser = repo.save(user);
         var jwtToken = jwtService.generateToken(user);
