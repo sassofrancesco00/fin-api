@@ -116,7 +116,7 @@ export class AuthService {
 
   hasRole(role: string): boolean {
     const user = this.getCurrentUser();
-    return user?.ruolo === role || user?.role === role;
+    return user?.role === role || user?.role === role;
   }
 
   isSupervisore(): boolean {
@@ -148,7 +148,7 @@ export class AuthService {
         lastname: registerData.lastname,
         email: registerData.email,
         role: 'USER',
-        ruolo: 'USER'
+        ruoloCode: 'U'
       };
 
       localStorage.setItem(this.USER_KEY, JSON.stringify(tempUser));
