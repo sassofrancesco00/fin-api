@@ -14,7 +14,7 @@ export interface User {
   firstname: string;
   lastname: string;
   email: string;
-  ruolo: string; // Mantieni la struttura che hai già
+  ruoloCode: string; // Mantieni la struttura che hai giï¿½
   role: string;
 }
 

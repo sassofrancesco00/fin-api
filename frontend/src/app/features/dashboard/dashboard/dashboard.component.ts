@@ -3,6 +3,7 @@ import {Component, OnInit} from '@angular/core';
 import {NgClass, TitleCasePipe, CommonModule} from '@angular/common';
 import {RouterModule} from '@angular/router';
 import { SidebarComponent } from '../../../core/layout/sidebar/sidebar.component';
+import { AuthService } from '../../../core/auth/auth.service';
 
 // Interfaces (same as your models)
 interface Cliente {
@@ -19,7 +20,7 @@ interface User {
   firstname: string;
   lastname: string;
   email: string;
-  ruolo: 'CONSULENTE' | 'SUPERVISORE';
+  ruoloCode: string;
 }
 
 interface NotaInterna {
@@ -84,7 +85,7 @@ interface DashboardStats {
     TitleCasePipe,
     NgClass,
     RouterModule,
-    SidebarComponent // importa il componente sidebar
+    SidebarComponent
   ],
   styleUrls: ['./dashboard.component.css']
 })
@@ -106,7 +107,7 @@ export class DashboardComponent implements OnInit {
   polizzeInScadenza: PolizzaAssicurativa[] = [];
   loading = true;
 
-  // DATI MOCK
+  // DATI MOCK - Solo per clienti, richieste e polizze (non più per utenti)
   private readonly mockClienti: Cliente[] = [
     { id: 1, nome: 'Mario', cognome: 'Rossi', codiceFiscale: 'RSSMRA80A01H501X', telefono: '3331234567', email: 'mario.rossi@email.it' },
     { id: 2, nome: 'Giuseppe', cognome: 'Verdi', codiceFiscale: 'VRDGPP75B15F205Y', telefono: '3339876543', email: 'giuseppe.verdi@email.it' },
@@ -115,18 +116,12 @@ export class DashboardComponent implements OnInit {
     { id: 5, nome: 'Laura', cognome: 'Gialli', codiceFiscale: 'GLLLRA88E25B345V', telefono: '3332223333', email: 'laura.gialli@email.it' }
   ];
 
-  private readonly mockUsers: User[] = [
-    { id: 1, firstname: 'Marco', lastname: 'Consulente', email: 'marco.consulente@azienda.it', ruolo: 'CONSULENTE' },
-    { id: 2, firstname: 'Anna', lastname: 'Supervisore', email: 'anna.supervisore@azienda.it', ruolo: 'SUPERVISORE' }
-  ];
-
   private readonly mockRichieste: RichiestaInvestimento[] = [
     {
       id: 1,
       clienteId: 2,
       cliente: this.mockClienti.find(c => c.id === 2),
-      userId: 1,
-      user: this.mockUsers.find(u => u.id === 1),
+      userId: 1, // Questo verrà aggiornato con l'ID dell'utente reale
       importo: 50000,
       tipoInvestimento: 'ETF',
       dataInserimento: new Date('2025-06-15'),
@@ -139,7 +134,6 @@ export class DashboardComponent implements OnInit {
       clienteId: 3,
       cliente: this.mockClienti.find(c => c.id === 3),
       userId: 1,
-      user: this.mockUsers.find(u => u.id === 1),
       importo: 25000,
       tipoInvestimento: 'Azioni',
       dataInserimento: new Date('2025-06-14'),
@@ -152,7 +146,6 @@ export class DashboardComponent implements OnInit {
       clienteId: 4,
       cliente: this.mockClienti.find(c => c.id === 4),
       userId: 1,
-      user: this.mockUsers.find(u => u.id === 1),
       importo: 75000,
       tipoInvestimento: 'Obbligazioni',
       dataInserimento: new Date('2025-06-13'),
@@ -166,7 +159,6 @@ export class DashboardComponent implements OnInit {
       clienteId: 1,
       cliente: this.mockClienti.find(c => c.id === 1),
       userId: 1,
-      user: this.mockUsers.find(u => u.id === 1),
       importo: 100000,
       tipoInvestimento: 'ETF',
       dataInserimento: new Date('2025-06-12'),
@@ -182,7 +174,6 @@ export class DashboardComponent implements OnInit {
       clienteId: 5,
       cliente: this.mockClienti.find(c => c.id === 5),
       userId: 1,
-      user: this.mockUsers.find(u => u.id === 1),
       tipoPolizza: 'RC_Auto',
       numeroPolizza: 'AUTO001',
       premio: 1200,
@@ -195,7 +186,6 @@ export class DashboardComponent implements OnInit {
       clienteId: 2,
       cliente: this.mockClienti.find(c => c.id === 2),
       userId: 1,
-      user: this.mockUsers.find(u => u.id === 1),
       tipoPolizza: 'Casa',
       numeroPolizza: 'CASA001',
       premio: 800,
@@ -208,7 +198,6 @@ export class DashboardComponent implements OnInit {
       clienteId: 3,
       cliente: this.mockClienti.find(c => c.id === 3),
       userId: 1,
-      user: this.mockUsers.find(u => u.id === 1),
       tipoPolizza: 'Vita',
       numeroPolizza: 'VITA001',
       premio: 2500,
@@ -221,7 +210,6 @@ export class DashboardComponent implements OnInit {
       clienteId: 1,
       cliente: this.mockClienti.find(c => c.id === 1),
       userId: 1,
-      user: this.mockUsers.find(u => u.id === 1),
       tipoPolizza: 'Infortuni',
       numeroPolizza: 'INF001',
       premio: 450,
@@ -231,13 +219,22 @@ export class DashboardComponent implements OnInit {
     }
   ];
 
-  constructor() {
-    // Mock current user
-    this.currentUser = this.mockUsers[0]; // Simula un consulente loggato
-  }
+  constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
+    this.loadCurrentUser();
     this.loadDashboardData();
+  }
+
+  private loadCurrentUser(): void {
+    // Ottieni l'utente corrente dal service di autenticazione
+    this.currentUser = this.authService.getCurrentUser();
+
+    if (!this.currentUser) {
+      console.error('Utente non autenticato');
+      // Opzionalmente reindirizza al login
+      // this.router.navigate(['/login']);
+    }
   }
 
   private loadDashboardData(): void {
@@ -245,6 +242,12 @@ export class DashboardComponent implements OnInit {
 
     // Simula un delay delle API
     setTimeout(() => {
+      // Assicurati che ci sia un utente corrente
+      if (this.currentUser) {
+        // Aggiorna i dati mock con l'ID dell'utente reale
+        this.updateMockDataWithCurrentUser();
+      }
+
       // Calcola le statistiche dai dati mock
       this.stats = {
         totalClienti: this.mockClienti.length,
@@ -269,7 +272,23 @@ export class DashboardComponent implements OnInit {
       this.polizzeInScadenza = this.getPolizzeInScadenza().slice(0, 5);
 
       this.loading = false;
-    }, 1500); // Simula 1.5 secondi di caricamento
+    }, 1500);
+  }
+
+  private updateMockDataWithCurrentUser(): void {
+    if (!this.currentUser) return;
+
+    // Aggiorna i dati mock con l'utente reale
+    this.mockRichieste.forEach(richiesta => {
+      richiesta.user = this.currentUser!;
+      richiesta.userId = this.currentUser!.id;
+      richiesta.consulenteId = this.currentUser!.id;
+    });
+
+    this.mockPolizze.forEach(polizza => {
+      polizza.user = this.currentUser!;
+      polizza.userId = this.currentUser!.id;
+    });
   }
 
   private getPolizzeInScadenza(): PolizzaAssicurativa[] {
@@ -322,17 +341,18 @@ export class DashboardComponent implements OnInit {
   }
 
   refreshDashboard(): void {
+    this.loadCurrentUser();
     this.loadDashboardData();
   }
 
-  // Mock del metodo isConsulente() che probabilmente viene da AuthService
+  // Utilizza il metodo del servizio di autenticazione
   isConsulente(): boolean {
-    return this.currentUser?.ruolo === 'CONSULENTE';
+    return this.authService.isConsulente();
   }
 
-  // Mock del metodo getCurrentUser() che probabilmente viene da AuthService
+  // Utilizza il metodo del servizio di autenticazione
   getCurrentUser(): User | null {
-    return this.currentUser;
+    return this.authService.getCurrentUser();
   }
 
   sidebarRoutes = [
@@ -340,6 +360,5 @@ export class DashboardComponent implements OnInit {
     { label: 'Clienti', icon: 'fas fa-users', route: '/clienti' },
     { label: 'Investimenti', icon: 'fas fa-chart-line', route: '/investimenti' },
     { label: 'Polizze', icon: 'fas fa-shield-alt', route: '/polizze' }
-    // aggiungi altre rotte se necessario
   ];
 }
