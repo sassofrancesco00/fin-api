@@ -20,20 +20,20 @@ const routes: Routes = [
 
   // GESTIONE CLIENTI
   { path: 'clienti', component: ClienteListComponent },
-  { path: 'clienti/lista', component: ClienteListComponent, canActivate: [AuthGuard] },
+  { path: 'clienti/lista', component: ClienteListComponent },
   { path: 'clienti/nuovo', component: ClienteFormComponent, canActivate: [AuthGuard] },
   { path: 'clienti/modifica/:id', component: ClienteFormComponent, canActivate: [AuthGuard] },
   { path: 'clienti/dettaglio/:id', component: ClienteFormComponent, canActivate: [AuthGuard] },
 
   // GESTIONE POLIZZE
-  { path: 'polizze', component: PolizzaListComponent, canActivate: [AuthGuard] },
+  { path: 'polizze', component: PolizzaListComponent },
   { path: 'polizze/lista', component: PolizzaListComponent, canActivate: [AuthGuard] },
   { path: 'polizze/nuova', component: PolizzaFormComponent, canActivate: [AuthGuard] },
   { path: 'polizze/modifica/:id', component: PolizzaFormComponent, canActivate: [AuthGuard] },
   { path: 'polizze/dettaglio/:id', component: PolizzaFormComponent, canActivate: [AuthGuard] },
 
   // GESTIONE INVESTIMENTI
-  { path: 'investimenti', component: RichiestaListComponent, canActivate: [AuthGuard] },
+  { path: 'investimenti', component: RichiestaListComponent },
   { path: 'investimenti/richieste', component: RichiestaListComponent, canActivate: [AuthGuard] },
   { path: 'investimenti/nuova-richiesta', component: RichiestaFormComponent, canActivate: [AuthGuard] },
   { path: 'investimenti/modifica-richiesta/:id', component: RichiestaFormComponent, canActivate: [AuthGuard] },

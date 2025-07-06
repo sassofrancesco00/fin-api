@@ -49,7 +49,7 @@ body {
 /* ===== LAYOUT PRINCIPALE ===== */
 .clienti-wrapper {
   min-height: 100vh;
-  padding-left: 260px; /* Spazio per sidebar */
+  /*padding-left: 260px;*/ /* Spazio per sidebar */
   transition: padding-left 0.3s ease;
 }
 
