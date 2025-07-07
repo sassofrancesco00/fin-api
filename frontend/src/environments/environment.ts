@@ -5,10 +5,6 @@
 export const environmentTest = {
   apiUrlLocal: 'http://localhost:8080/api/v1',
   production: false,
-
-  //Strie Publishable Key TEST
-  STRIPE_KEY: 'pk_test_51MVyr6GW69cIwRMT1efQbEbmeHCXPqRHR1El34gKpDaZjhcbubd9z3Vvp0y0JlU3SwM1mlzynMqQerKwFss05ote00qjAv4iRD',
-  serverUrl: '/api/stripe',
 };
 
 /*

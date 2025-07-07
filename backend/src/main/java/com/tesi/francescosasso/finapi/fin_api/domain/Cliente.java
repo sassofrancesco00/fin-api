@@ -11,7 +11,8 @@ public class Cliente {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nome;
+    private String firstname;
+    private String lastname;
 
     @Column(name = "codice_fiscale", unique = true, nullable = false)
     private String codiceFiscale;

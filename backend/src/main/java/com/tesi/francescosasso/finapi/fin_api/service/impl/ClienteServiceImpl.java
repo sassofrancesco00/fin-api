@@ -4,6 +4,7 @@ import com.tesi.francescosasso.finapi.fin_api.domain.Cliente;
 import com.tesi.francescosasso.finapi.fin_api.domain.dto.ClienteDTO;
 import com.tesi.francescosasso.finapi.fin_api.repo.ClienteRepo;
 import com.tesi.francescosasso.finapi.fin_api.service.ClienteService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +18,10 @@ import java.util.stream.Collectors;
  * @since 2025
  */
 @Service
+@RequiredArgsConstructor
 public class ClienteServiceImpl implements ClienteService {
 
-    @Autowired
-    private ClienteRepo clienteRepository;
+    private  final ClienteRepo clienteRepository;
 
     @Override
     public List<ClienteDTO> findAll() {
@@ -40,7 +41,8 @@ public class ClienteServiceImpl implements ClienteService {
     private ClienteDTO toDTO(Cliente c) {
         ClienteDTO dto = new ClienteDTO();
         dto.setId(c.getId());
-        dto.setNome(c.getNome());
+        dto.setNome(c.getFirstname());
+        dto.setCognome(c.getLastname());
         dto.setCodiceFiscale(c.getCodiceFiscale());
         dto.setTelefono(c.getTelefono());
         dto.setEmail(c.getEmail());
