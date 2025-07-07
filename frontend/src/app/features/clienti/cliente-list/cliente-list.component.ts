@@ -1,65 +1,36 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SidebarComponent } from '../../../core/layout/sidebar/sidebar.component';
-
-interface Cliente {
-  id?: number;
-  nome: string;
-  cognome: string;
-  codiceFiscale: string;
-  telefono: string;
-  email: string;
-}
-
-interface RichiestaInvestimento {
-  id?: number;
-  clienteId: number;
-  cliente?: Cliente;
-  userId: number;
-  importo: number;
-  tipoInvestimento: 'Azioni' | 'Obbligazioni' | 'ETF';
-  dataInserimento: Date;
-  dataModifica: Date;
-  stato: 'in_revisione' | 'Approvata' | 'Respinta';
-  motivazioneRespinta?: string;
-  consulenteId: number;
-}
-
-interface PolizzaAssicurativa {
-  id?: number;
-  clienteId: number;
-  cliente?: Cliente;
-  userId: number;
-  tipoPolizza: 'Vita' | 'Infortuni' | 'RC_Auto' | 'Casa';
-  numeroPolizza: string;
-  premio: number;
-  dataInizio: Date;
-  dataScadenza: Date;
-  stato: 'in_revisione' | 'Approvata' | 'Respinta';
-  motivazioneRespinta?: string;
-}
+import { Subject, forkJoin, takeUntil } from 'rxjs';
+import { ClienteService } from '../../../shared/services/cliente.service';
+import { Cliente } from '../../../shared/models/cliente';
+import { RichiestaInvestimento } from '../../../shared/models/richiesta-investimento';
+import { PolizzaAssicurativa } from '../../../shared/models/polizza';
 
 @Component({
   selector: 'app-cliente-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, SidebarComponent],
+  imports: [CommonModule, FormsModule],
   templateUrl: './cliente-list.component.html',
   styleUrls: ['./cliente-list.component.css']
 })
-export class ClienteListComponent implements OnInit {
+export class ClienteListComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
   // Data properties
   clienti: Cliente[] = [];
   filteredClienti: Cliente[] = [];
   paginatedClienti: Cliente[] = [];
 
-  // Mock data for related entities
+  // Related entities
   richieste: RichiestaInvestimento[] = [];
   polizze: PolizzaAssicurativa[] = [];
 
   // UI State
   loading = true;
+  error: string | null = null;
 
   // Filter and Search
   searchTerm = '';
@@ -89,55 +60,53 @@ export class ClienteListComponent implements OnInit {
     { label: 'Polizze', icon: 'fas fa-shield-alt', route: '/polizze' }
   ];
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private clienteService: ClienteService
+  ) {}
 
   ngOnInit(): void {
     this.loadData();
   }
 
-  private loadData(): void {
-    this.loading = true;
-
-    // Mock data - in real app, these would come from services
-    setTimeout(() => {
-      this.clienti = [
-        { id: 1, nome: 'Mario', cognome: 'Rossi', codiceFiscale: 'RSSMRA80A01H501X', telefono: '3331234567', email: 'mario.rossi@email.it' },
-        { id: 2, nome: 'Giuseppe', cognome: 'Verdi', codiceFiscale: 'VRDGPP75B15F205Y', telefono: '3339876543', email: 'giuseppe.verdi@email.it' },
-        { id: 3, nome: 'Maria', cognome: 'Bianchi', codiceFiscale: 'BNCMRA85C20D612Z', telefono: '3335554444', email: 'maria.bianchi@email.it' },
-        { id: 4, nome: 'Franco', cognome: 'Neri', codiceFiscale: 'NRIFNC70D10A662W', telefono: '3337778888', email: 'franco.neri@email.it' },
-        { id: 5, nome: 'Laura', cognome: 'Gialli', codiceFiscale: 'GLLLRA88E25B345V', telefono: '3332223333', email: 'laura.gialli@email.it' },
-        { id: 6, nome: 'Alessandro', cognome: 'Blu', codiceFiscale: 'BLUALS90F12C123A', telefono: '3334445555', email: 'alessandro.blu@email.it' },
-        { id: 7, nome: 'Giulia', cognome: 'Rosa', codiceFiscale: 'RSOGLI92H25D456B', telefono: '3336667777', email: 'giulia.rosa@email.it' },
-        { id: 8, nome: 'Davide', cognome: 'Viola', codiceFiscale: 'VLADV088L30E789C', telefono: '3338889999', email: 'davide.viola@email.it' }
-      ];
-
-      this.richieste = [
-        { id: 1, clienteId: 1, userId: 1, importo: 50000, tipoInvestimento: 'ETF', dataInserimento: new Date('2025-06-15'), dataModifica: new Date('2025-06-15'), stato: 'in_revisione', consulenteId: 1 },
-        { id: 2, clienteId: 2, userId: 1, importo: 25000, tipoInvestimento: 'Azioni', dataInserimento: new Date('2025-06-14'), dataModifica: new Date('2025-06-14'), stato: 'Approvata', consulenteId: 1 },
-        { id: 3, clienteId: 1, userId: 1, importo: 75000, tipoInvestimento: 'Obbligazioni', dataInserimento: new Date('2025-06-13'), dataModifica: new Date('2025-06-13'), stato: 'Respinta', consulenteId: 1 }
-      ];
-
-      this.polizze = [
-        { id: 1, clienteId: 1, userId: 1, tipoPolizza: 'RC_Auto', numeroPolizza: 'AUTO001', premio: 1200, dataInizio: new Date('2025-01-15'), dataScadenza: new Date('2025-12-15'), stato: 'Approvata' },
-        { id: 2, clienteId: 2, userId: 1, tipoPolizza: 'Casa', numeroPolizza: 'CASA001', premio: 800, dataInizio: new Date('2024-07-22'), dataScadenza: new Date('2025-07-22'), stato: 'Approvata' },
-        { id: 3, clienteId: 3, userId: 1, tipoPolizza: 'Vita', numeroPolizza: 'VITA001', premio: 2500, dataInizio: new Date('2024-11-10'), dataScadenza: new Date('2025-11-10'), stato: 'Approvata' }
-      ];
-
-      this.calculateStats();
-      this.applyFilters();
-      this.loading = false;
-    }, 1000);
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
-  private calculateStats(): void {
-    this.totalClienti = this.clienti.length;
-    this.clientiAttivi = this.clienti.length; // Assuming all are active for now
+  private loadData(): void {
+    this.loading = true;
+    this.error = null;
 
-    const clientiConInvestimentiSet = new Set(this.richieste.map(r => r.clienteId));
-    this.clientiConInvestimenti = clientiConInvestimentiSet.size;
+    // Carica tutti i dati contemporaneamente
+    forkJoin({
+      clienti: this.clienteService.getAllClienti(),
+      richieste: this.clienteService.getAllRichiesteInvestimento(),
+      polizze: this.clienteService.getAllPolizze(),
+      stats: this.clienteService.getClientiStats()
+    }).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: (data) => {
+        this.clienti = data.clienti;
+        this.richieste = data.richieste;
+        this.polizze = data.polizze;
+        
+        // Aggiorna le statistiche
+        this.totalClienti = data.stats.totalClienti;
+        this.clientiAttivi = data.stats.clientiAttivi;
+        this.clientiConInvestimenti = data.stats.clientiConInvestimenti;
+        this.clientiConPolizze = data.stats.clientiConPolizze;
 
-    const clientiConPolizzeSet = new Set(this.polizze.map(p => p.clienteId));
-    this.clientiConPolizze = clientiConPolizzeSet.size;
+        this.applyFilters();
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Errore nel caricamento dei dati:', error);
+        this.error = 'Errore nel caricamento dei dati. Riprova più tardi.';
+        this.loading = false;
+      }
+    });
   }
 
   // Filter and Search methods
@@ -255,7 +224,7 @@ export class ClienteListComponent implements OnInit {
 
   // Helper methods for related data
   getClienteInvestimenti(clienteId: number): RichiestaInvestimento[] {
-    return this.richieste.filter(r => r.clienteId === clienteId);
+    return this.richieste.filter(r => r.richiesta.cliente.id === clienteId);
   }
 
   getClientePolizze(clienteId: number): PolizzaAssicurativa[] {
@@ -277,13 +246,21 @@ export class ClienteListComponent implements OnInit {
 
   deleteCliente(cliente: Cliente): void {
     if (confirm(`Sei sicuro di voler eliminare il cliente ${cliente.nome} ${cliente.cognome}?`)) {
-      this.clienti = this.clienti.filter(c => c.id !== cliente.id);
-      this.selectedClienti = this.selectedClienti.filter(id => id !== cliente.id);
-      this.calculateStats();
-      this.applyFilters();
-
-      // Show success message
-      alert('Cliente eliminato con successo!');
+      this.clienteService.deleteCliente(cliente.id!).pipe(
+        takeUntil(this.destroy$)
+      ).subscribe({
+        next: () => {
+          this.clienti = this.clienti.filter(c => c.id !== cliente.id);
+          this.selectedClienti = this.selectedClienti.filter(id => id !== cliente.id);
+          this.applyFilters();
+          this.updateStats();
+          alert('Cliente eliminato con successo!');
+        },
+        error: (error) => {
+          console.error('Errore nell\'eliminazione del cliente:', error);
+          alert('Errore nell\'eliminazione del cliente. Riprova più tardi.');
+        }
+      });
     }
   }
 
@@ -291,15 +268,43 @@ export class ClienteListComponent implements OnInit {
     if (this.selectedClienti.length === 0) return;
 
     if (confirm(`Sei sicuro di voler eliminare ${this.selectedClienti.length} clienti selezionati?`)) {
-      this.clienti = this.clienti.filter(c => !this.selectedClienti.includes(c.id!));
-      this.selectedClienti = [];
-      this.selectAll = false;
-      this.calculateStats();
-      this.applyFilters();
+      const deleteObservables = this.selectedClienti.map(id => 
+        this.clienteService.deleteCliente(id)
+      );
 
-      // Show success message
-      alert('Clienti eliminati con successo!');
+      forkJoin(deleteObservables).pipe(
+        takeUntil(this.destroy$)
+      ).subscribe({
+        next: () => {
+          this.clienti = this.clienti.filter(c => !this.selectedClienti.includes(c.id!));
+          this.selectedClienti = [];
+          this.selectAll = false;
+          this.applyFilters();
+          this.updateStats();
+          alert('Clienti eliminati con successo!');
+        },
+        error: (error) => {
+          console.error('Errore nell\'eliminazione dei clienti:', error);
+          alert('Errore nell\'eliminazione dei clienti. Riprova più tardi.');
+        }
+      });
     }
+  }
+
+  private updateStats(): void {
+    this.clienteService.getClientiStats().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: (stats) => {
+        this.totalClienti = stats.totalClienti;
+        this.clientiAttivi = stats.clientiAttivi;
+        this.clientiConInvestimenti = stats.clientiConInvestimenti;
+        this.clientiConPolizze = stats.clientiConPolizze;
+      },
+      error: (error) => {
+        console.error('Errore nell\'aggiornamento delle statistiche:', error);
+      }
+    });
   }
 
   exportSelected(): void {

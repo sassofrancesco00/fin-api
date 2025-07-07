@@ -3,6 +3,7 @@ package com.tesi.francescosasso.finapi.fin_api.api;
 import com.tesi.francescosasso.finapi.fin_api.domain.Cliente;
 import com.tesi.francescosasso.finapi.fin_api.domain.dto.ClienteDTO;
 import com.tesi.francescosasso.finapi.fin_api.service.ClienteService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,10 +14,12 @@ import java.util.List;
  * @since 2025
  */
 @RestController
-@RequestMapping("/api/clienti")
+@RequestMapping("/api/v1/clienti")
+@RequiredArgsConstructor
+
 public class ClienteResource {
 
-    private ClienteService clienteService;
+    private final ClienteService clienteService;
 
     @GetMapping
     public List<ClienteDTO> getAllClienti() {

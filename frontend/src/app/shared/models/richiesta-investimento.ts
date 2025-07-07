@@ -1,19 +1,18 @@
 import {User} from './user';
 import {Cliente} from './cliente';
 import {NotaInterna} from './nota-interna';
+import { Investimento } from './investimento';
+import { Richiesta } from './richiesta';
 
 export interface RichiestaInvestimento {
   id?: number;
-  clienteId: number;
-  cliente?: Cliente;
-  userId: number;
-  user?: User;
+  richiesta: Richiesta;
+  investimento: Investimento;
   importo: number;
-  tipoInvestimento: 'Azioni' | 'Obbligazioni' | 'ETF';
   dataInserimento: Date;
-  dataModifica:   Date;
-  stato: 'in_revisione' | 'Approvata' | 'Respinta';
+  dataModifica: Date;
+  stato: string;
   motivazioneRespinta?: string;
-  noteInterne?: NotaInterna;
-  consulenteId: number
+  consulenteId: number; // user.id dalla richiesta
 }
+
