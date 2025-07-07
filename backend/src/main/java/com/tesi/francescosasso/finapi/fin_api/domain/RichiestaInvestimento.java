@@ -2,25 +2,26 @@ package com.tesi.francescosasso.finapi.fin_api.domain;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+
 @Entity
 public class RichiestaInvestimento {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "richiesta_id", nullable = false)
-    private Richiesta richiesta;
+    private Cliente cliente;
 
     @ManyToOne
-    @JoinColumn(name = "investimento_id", nullable = false)
-    private Investimento investimento;
+    private User user;
 
-    private Double importoInvestito;
+    @ManyToOne
+    private StatoPratica stato;
 
-    private Integer durataMesi;
-
-    // Getters & Setters
+    private Double importo;
+    private String tipoInvestimento; // Oppure enum
+    private LocalDate dataInserimento;
+    private LocalDate dataModifica;
+    private String motivazioneRespinta;
 }
 

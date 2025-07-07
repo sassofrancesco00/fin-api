@@ -9,6 +9,7 @@ import { PolizzaFormComponent } from './features/polizze/polizza-form/polizza-fo
 import { RichiestaListComponent } from './features/investimenti/richiesta-list/richiesta-list.component';
 import { RichiestaFormComponent } from './features/investimenti/richiesta-form/richiesta-form.component';
 import {ClienteListComponent} from './features/clienti/cliente-list/cliente-list.component';
+import { WrapperComponent } from './features/wrapper/wrapper.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
@@ -17,15 +18,25 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
 
-  // DASHBOARD
-  { path: 'dashboard', component: DashboardComponent },
+// DASHBOARD
+{
+  path: 'dashboard',
+  component: WrapperComponent,
+  children: [
+    { path: '', component: DashboardComponent },
+    { path: 'clienti', component: ClienteListComponent, children:[
+          {path: 'nuovo', component: ClienteFormComponent, canActivate: [AuthGuard] },
+          { path: 'modifica/:id', component: ClienteFormComponent, canActivate: [AuthGuard] },
+          { path: 'dettaglio/:id', component: ClienteFormComponent, canActivate: [AuthGuard] },
+    ] },
+    { path: 'polizze', component: PolizzaListComponent },
+    { path: 'investimenti', component: RichiestaListComponent },
+  ]
+},
 
   // GESTIONE CLIENTI
-  { path: 'clienti', component: ClienteListComponent },
-  { path: 'clienti/lista', component: ClienteListComponent },
-  { path: 'clienti/nuovo', component: ClienteFormComponent, canActivate: [AuthGuard] },
-  { path: 'clienti/modifica/:id', component: ClienteFormComponent, canActivate: [AuthGuard] },
-  { path: 'clienti/dettaglio/:id', component: ClienteFormComponent, canActivate: [AuthGuard] },
+  // { path: 'clienti', component: ClienteListComponent },
+ 
 
   // GESTIONE POLIZZE
   { path: 'polizze', component: PolizzaListComponent },

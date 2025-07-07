@@ -1,10 +1,15 @@
 .sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
   width: 220px;
-  min-height: 100vh;
-  background: #f8f9fa;
+  z-index: 1000;
+  overflow-y: auto;
+  background: #fff;
   border-right: 1px solid #dee2e6;
-  padding: 1rem 0;
 }
+
 .nav-link.active {
   background: #e9ecef;
   font-weight: bold;
