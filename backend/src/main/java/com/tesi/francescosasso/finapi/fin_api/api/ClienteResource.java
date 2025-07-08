@@ -2,6 +2,7 @@ package com.tesi.francescosasso.finapi.fin_api.api;
 
 import com.tesi.francescosasso.finapi.fin_api.domain.Cliente;
 import com.tesi.francescosasso.finapi.fin_api.domain.dto.ClienteDTO;
+import com.tesi.francescosasso.finapi.fin_api.domain.dto.ClienteStatsDTO;
 import com.tesi.francescosasso.finapi.fin_api.service.ClienteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -34,5 +35,10 @@ public class ClienteResource {
     @PostMapping
     public Cliente createCliente(@RequestBody Cliente cliente) {
         return clienteService.save(cliente);
+    }
+
+    @GetMapping("/stats")
+    public ClienteStatsDTO getClientiStats() {
+        return clienteService.getClientiStats();
     }
 }

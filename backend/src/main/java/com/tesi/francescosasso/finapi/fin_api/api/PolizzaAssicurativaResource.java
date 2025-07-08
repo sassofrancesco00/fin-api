@@ -3,6 +3,7 @@ package com.tesi.francescosasso.finapi.fin_api.api;
 import com.tesi.francescosasso.finapi.fin_api.domain.PolizzaAssicurativa;
 import com.tesi.francescosasso.finapi.fin_api.domain.dto.PolizzaAssicurativaDTO;
 import com.tesi.francescosasso.finapi.fin_api.service.PolizzaAssicurativaService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,10 +15,11 @@ import java.util.List;
  */
 
 @RestController
-@RequestMapping("/api/polizze")
+@RequestMapping("/api/v1/polizze")
+@RequiredArgsConstructor
 public class PolizzaAssicurativaResource {
 
-    private PolizzaAssicurativaService polizzaService;
+    private final  PolizzaAssicurativaService polizzaService;
 
     @GetMapping
     public List<PolizzaAssicurativaDTO> getAll() {

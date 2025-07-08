@@ -1,0 +1,9 @@
+INSERT INTO finapi.ruolo
+(id, codice, descrizione)
+VALUES(1, 'U', 'Utente');
+INSERT INTO finapi.ruolo
+(id, codice, descrizione)
+VALUES(2, 'C', 'Consulente');
+INSERT INTO finapi.ruolo
+(id, codice, descrizione)
+VALUES(3, 'S', 'Supervisore');

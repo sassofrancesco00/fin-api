@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import {Router, RouterOutlet} from '@angular/router';
 import { SidebarComponent } from '../../../core/layout/sidebar/sidebar.component';
 import { Subject, forkJoin, takeUntil } from 'rxjs';
 import { ClienteService } from '../../../shared/services/cliente.service';
@@ -12,7 +12,7 @@ import { PolizzaAssicurativa } from '../../../shared/models/polizza';
 @Component({
   selector: 'app-cliente-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterOutlet],
   templateUrl: './cliente-list.component.html',
   styleUrls: ['./cliente-list.component.css']
 })
@@ -52,14 +52,6 @@ export class ClienteListComponent implements OnInit, OnDestroy {
   clientiConInvestimenti = 0;
   clientiConPolizze = 0;
 
-  // Sidebar routes
-  sidebarRoutes = [
-    { label: 'Dashboard', icon: 'fas fa-tachometer-alt', route: '/dashboard' },
-    { label: 'Clienti', icon: 'fas fa-users', route: '/clienti', active: true },
-    { label: 'Investimenti', icon: 'fas fa-chart-line', route: '/investimenti' },
-    { label: 'Polizze', icon: 'fas fa-shield-alt', route: '/polizze' }
-  ];
-
   constructor(
     private router: Router,
     private clienteService: ClienteService
@@ -91,7 +83,7 @@ export class ClienteListComponent implements OnInit, OnDestroy {
         this.clienti = data.clienti;
         this.richieste = data.richieste;
         this.polizze = data.polizze;
-        
+
         // Aggiorna le statistiche
         this.totalClienti = data.stats.totalClienti;
         this.clientiAttivi = data.stats.clientiAttivi;
@@ -237,11 +229,12 @@ export class ClienteListComponent implements OnInit, OnDestroy {
   }
 
   viewCliente(cliente: Cliente): void {
-    this.router.navigate(['/clienti', cliente.id]);
+    this.router.navigate(['/dashboard/clienti/view', cliente.id]);
   }
 
+
   editCliente(cliente: Cliente): void {
-    this.router.navigate(['/clienti', cliente.id, 'edit']);
+    this.router.navigate(['/dashboard/clienti/edit', cliente.id, ]);
   }
 
   deleteCliente(cliente: Cliente): void {
@@ -268,7 +261,7 @@ export class ClienteListComponent implements OnInit, OnDestroy {
     if (this.selectedClienti.length === 0) return;
 
     if (confirm(`Sei sicuro di voler eliminare ${this.selectedClienti.length} clienti selezionati?`)) {
-      const deleteObservables = this.selectedClienti.map(id => 
+      const deleteObservables = this.selectedClienti.map(id =>
         this.clienteService.deleteCliente(id)
       );
 

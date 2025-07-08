@@ -154,7 +154,6 @@ export class ClienteFormComponent implements OnInit {
         this.lastModified = cliente.dataModifica || null;
       } else {
         this.errorMessage = 'Cliente non trovato';
-        setTimeout(() => this.router.navigate(['/clienti']), 2000);
       }
 
       this.loading = false;
@@ -288,12 +287,4 @@ export class ClienteFormComponent implements OnInit {
   goBack(): void {
     this.router.navigate(['/clienti']);
   }
-
-  // Configurazione sidebar
-  sidebarRoutes = [
-    { label: 'Dashboard', icon: 'fas fa-tachometer-alt', route: '/dashboard' },
-    { label: 'Clienti', icon: 'fas fa-users', route: '/clienti' },
-    { label: 'Investimenti', icon: 'fas fa-chart-line', route: '/investimenti' },
-    { label: 'Polizze', icon: 'fas fa-shield-alt', route: '/polizze' }
-  ];
 }
