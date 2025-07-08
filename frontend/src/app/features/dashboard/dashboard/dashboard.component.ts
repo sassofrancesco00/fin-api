@@ -231,7 +231,7 @@ export class DashboardComponent implements OnInit {
     this.currentUser = this.authService.getCurrentUser();
 
     if (!this.currentUser) {
-      console.error('Utente non autenticato');
+      // console.error('Utente non autenticato');
       // Opzionalmente reindirizza al login
       // this.router.navigate(['/login']);
     }

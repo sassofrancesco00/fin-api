@@ -4,6 +4,7 @@ import com.tesi.francescosasso.finapi.fin_api.domain.PolizzaAssicurativa;
 import com.tesi.francescosasso.finapi.fin_api.domain.dto.PolizzaAssicurativaDTO;
 import com.tesi.francescosasso.finapi.fin_api.repo.PolizzaAssicurativaRepo;
 import com.tesi.francescosasso.finapi.fin_api.service.PolizzaAssicurativaService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,8 +16,9 @@ import java.util.stream.Collectors;
  * @since 2025
  */
 @Service
+@RequiredArgsConstructor
 public class PolizzaAssicurativaServiceImpl implements PolizzaAssicurativaService {
-    private PolizzaAssicurativaRepo  polizzaRepository;
+    private final  PolizzaAssicurativaRepo  polizzaRepository;
 
     @Override
     public List<PolizzaAssicurativaDTO> findAll() {

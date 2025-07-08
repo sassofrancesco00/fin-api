@@ -75,15 +75,6 @@ export class RichiestaListComponent implements OnInit {
   // Modal data
   motivazioneRifiuto = '';
 
-  // Sidebar routes
-  sidebarRoutes: SidebarRoute[] = [
-    { path: '/dashboard', label: 'Dashboard', icon: 'fas fa-home' },
-    { path: '/clienti', label: 'Clienti', icon: 'fas fa-users' },
-    { path: '/richieste', label: 'Richieste', icon: 'fas fa-chart-line' },
-    { path: '/portafogli', label: 'Portafogli', icon: 'fas fa-briefcase' },
-    { path: '/reports', label: 'Reports', icon: 'fas fa-file-alt' }
-  ];
-
   constructor(private router: Router) {}
 
   ngOnInit(): void {

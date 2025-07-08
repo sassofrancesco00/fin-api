@@ -16,7 +16,7 @@
 /* Dashboard (contenuto) */
 .main-content {
   flex: 1 1 0;
-  margin-left: 220px; /* Larghezza sidebar */
+  margin-left: 200px; /* Larghezza sidebar */
   background: #f8f9fa;
   min-height: 100vh;
 }

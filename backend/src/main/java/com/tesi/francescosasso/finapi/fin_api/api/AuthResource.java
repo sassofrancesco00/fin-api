@@ -31,7 +31,6 @@ public class AuthResource {
             @RequestBody AuthenticationRequest request
     ) {
         return ResponseEntity.ok(service.authenticate(request));
-
     }
 
 }

@@ -22,6 +22,6 @@ export const supervisoreGuard: CanActivateFn = (route, state) => {
     return true;
   }
 
-  router.navigate(['/dashboard']);
+  // router.navigate(['/dashboard']);
   return false;
 };
