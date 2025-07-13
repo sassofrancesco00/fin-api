@@ -43,7 +43,7 @@ export interface SidebarRoute {
   selector: 'app-richiesta-list',
   templateUrl: './richiesta-list.component.html',
   styleUrls: ['./richiesta-list.component.css'],
-    standalone: true,
+  standalone: true,
   imports: [
     CommonModule,
     FormsModule// importa il componente sidebar
@@ -75,7 +75,7 @@ export class RichiestaListComponent implements OnInit {
   // Modal data
   motivazioneRifiuto = '';
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
     this.loadRichieste();

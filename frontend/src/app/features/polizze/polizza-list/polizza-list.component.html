@@ -1,1 +1,226 @@
-<p>polizza-list works!</p>
+<div class="polizza-container">
+  <div class="header">
+    <h1>Gestione Polizze Assicurative</h1>
+    <button class="btn-primary" (click)="mostraFormAggiungi()">
+      <i class="fas fa-plus"></i>
+      Nuova Polizza
+    </button>
+  </div>
+
+  <!-- Lista Polizze -->
+  <div class="polizze-grid">
+    <div class="polizza-card" *ngFor="let polizza of polizze">
+      <div class="card-header">
+        <div class="polizza-info">
+          <h3>{{ polizza.numeroPolizza }}</h3>
+          <span class="tipo-polizza">{{ getTipoPolizzaDescrizione(polizza.tipoPolizza) }}</span>
+        </div>
+        <span class="stato-badge" [ngClass]="getStatoClass(polizza.stato)">
+          {{ polizza.stato }}
+        </span>
+      </div>
+      
+      <div class="card-body">
+        <div class="cliente-info">
+          <strong>Cliente:</strong> {{ polizza.cliente?.nome }} {{ polizza.cliente?.cognome }}
+        </div>
+        <div class="agente-info">
+          <strong>Agente:</strong> {{ polizza.user?.firstname }} {{ polizza.user?.lastname }}
+        </div>
+        <div class="premio-info">
+          <strong>Premio:</strong> {{ polizza.premio | currency:'EUR':'symbol':'1.2-2' }}
+        </div>
+        <div class="date-info">
+          <strong>Validità:</strong> {{ polizza.dataInizio | date:'dd/MM/yyyy' }} - {{ polizza.dataScadenza | date:'dd/MM/yyyy' }}
+        </div>
+        <div class="motivazione-respinta" *ngIf="polizza.stato === 'Respinta' && polizza.motivazioneRespinta">
+          <strong>Motivazione:</strong> {{ polizza.motivazioneRespinta }}
+        </div>
+      </div>
+      
+      <div class="card-actions">
+        <button class="btn-secondary" (click)="visualizzaDettagli(polizza)">
+          <i class="fas fa-eye"></i>
+          Dettagli
+        </button>
+        <button class="btn-success" *ngIf="polizza.stato === 'in_revisione'" (click)="approvaPolizza(polizza)">
+          <i class="fas fa-check"></i>
+          Approva
+        </button>
+        <button class="btn-warning" *ngIf="polizza.stato === 'in_revisione'" (click)="respingiPolizza(polizza)">
+          <i class="fas fa-times"></i>
+          Respingi
+        </button>
+        <button class="btn-danger" (click)="eliminaPolizza(polizza)">
+          <i class="fas fa-trash"></i>
+          Elimina
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Dettagli Polizza -->
+  <div class="modal" *ngIf="showDettagli" (click)="chiudiDettagli()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Dettagli Polizza - {{ polizzaSelezionata?.numeroPolizza }}</h2>
+        <button class="btn-close" (click)="chiudiDettagli()">×</button>
+      </div>
+      
+      <div class="modal-body" *ngIf="polizzaSelezionata">
+        <div class="dettagli-grid">
+          <div class="dettaglio-item">
+            <label>Tipo Polizza:</label>
+            <span>{{ getTipoPolizzaDescrizione(polizzaSelezionata.tipoPolizza) }}</span>
+          </div>
+          <div class="dettaglio-item">
+            <label>Numero Polizza:</label>
+            <span>{{ polizzaSelezionata.numeroPolizza }}</span>
+          </div>
+          <div class="dettaglio-item">
+            <label>Premio:</label>
+            <span>{{ polizzaSelezionata.premio | currency:'EUR':'symbol':'1.2-2' }}</span>
+          </div>
+          <div class="dettaglio-item">
+            <label>Stato:</label>
+            <span class="stato-badge" [ngClass]="getStatoClass(polizzaSelezionata.stato)">
+              {{ polizzaSelezionata.stato }}
+            </span>
+          </div>
+          <div class="dettaglio-item">
+            <label>Data Inizio:</label>
+            <span>{{ polizzaSelezionata.dataInizio | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="dettaglio-item">
+            <label>Data Scadenza:</label>
+            <span>{{ polizzaSelezionata.dataScadenza | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="dettaglio-item cliente-dettagli">
+            <label>Cliente:</label>
+            <div class="cliente-info-dettagli">
+              <div><strong>Nome:</strong> {{ polizzaSelezionata.cliente?.nome }} {{ polizzaSelezionata.cliente?.cognome }}</div>
+              <div><strong>CF:</strong> {{ polizzaSelezionata.cliente?.codiceFiscale }}</div>
+              <div><strong>Email:</strong> {{ polizzaSelezionata.cliente?.email }}</div>
+              <div><strong>Telefono:</strong> {{ polizzaSelezionata.cliente?.telefono }}</div>
+            </div>
+          </div>
+          <div class="dettaglio-item agente-dettagli">
+            <label>Agente:</label>
+            <div class="agente-info-dettagli">
+              <div><strong>Nome:</strong> {{ polizzaSelezionata.user?.firstname }} {{ polizzaSelezionata.user?.lastname }}</div>
+              <div><strong>Email:</strong> {{ polizzaSelezionata.user?.email }}</div>
+              <div><strong>Ruolo:</strong> {{ polizzaSelezionata.user?.role }}</div>
+            </div>
+          </div>
+          <div class="dettaglio-item motivazione-dettagli" *ngIf="polizzaSelezionata.stato === 'Respinta' && polizzaSelezionata.motivazioneRespinta">
+            <label>Motivazione Respinta:</label>
+            <span>{{ polizzaSelezionata.motivazioneRespinta }}</span>
+          </div>
+        </div>
+        
+        <div class="note-interne-section">
+          <button class="btn-info" (click)="visualizzaNoteInterne()" *ngIf="!showNoteInterne">
+            <i class="fas fa-sticky-note"></i>
+            Visualizza Note Interne ({{ polizzaSelezionata.noteInterne?.length || 0 }})
+          </button>
+          
+          <div class="note-interne-container" *ngIf="showNoteInterne">
+            <div class="note-interne-header">
+              <h4>Note Interne</h4>
+              <button class="btn-close-small" (click)="chiudiNoteInterne()">×</button>
+            </div>
+            <div class="note-interne-lista">
+              <div class="nota-item" *ngFor="let nota of polizzaSelezionata.noteInterne">
+                <div class="nota-header">
+                  <strong>{{ nota.autore?.firstname }} {{ nota.autore?.lastname }}</strong>
+                  <span class="nota-data">{{ nota.dataCreazione | date:'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+                <div class="nota-testo">{{ nota.testo }}</div>
+              </div>
+              <div class="nessuna-nota" *ngIf="!polizzaSelezionata.noteInterne?.length">
+                Nessuna nota interna presente
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Aggiungi Polizza -->
+  <div class="modal" *ngIf="showAggiungiForm" (click)="chiudiFormAggiungi()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Nuova Polizza Assicurativa</h2>
+        <button class="btn-close" (click)="chiudiFormAggiungi()">×</button>
+      </div>
+      
+      <div class="modal-body">
+        <form class="form-grid">
+          <div class="form-group">
+            <label for="cliente">Cliente *</label>
+            <select id="cliente" [(ngModel)]="nuovaPolizza.clienteId" name="cliente" required>
+              <option value="0">Seleziona Cliente</option>
+              <option *ngFor="let cliente of clientiMock" [value]="cliente.id">
+                {{ cliente.nome }} {{ cliente.cognome }}
+              </option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="agente">Agente *</label>
+            <select id="agente" [(ngModel)]="nuovaPolizza.userId" name="agente" required>
+              <option *ngFor="let user of userMock" [value]="user.id">
+                {{ user.firstname }} {{ user.lastname }}
+              </option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="tipoPolizza">Tipo Polizza *</label>
+            <select id="tipoPolizza" [(ngModel)]="nuovaPolizza.tipoPolizza" name="tipoPolizza" required>
+              <option value="Vita">Assicurazione Vita</option>
+              <option value="Infortuni">Assicurazione Infortuni</option>
+              <option value="RC_Auto">RC Auto</option>
+              <option value="Casa">Assicurazione Casa</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="numeroPolizza">Numero Polizza *</label>
+            <input type="text" id="numeroPolizza" [(ngModel)]="nuovaPolizza.numeroPolizza" name="numeroPolizza" placeholder="Es. VIT001234" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="premio">Premio (€) *</label>
+            <input type="number" id="premio" [(ngModel)]="nuovaPolizza.premio" name="premio" min="0" step="0.01" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="dataInizio">Data Inizio *</label>
+            <input type="date" id="dataInizio" [(ngModel)]="nuovaPolizza.dataInizio" name="dataInizio" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="dataScadenza">Data Scadenza *</label>
+            <input type="date" id="dataScadenza" [(ngModel)]="nuovaPolizza.dataScadenza" name="dataScadenza" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="stato">Stato</label>
+            <select id="stato" [(ngModel)]="nuovaPolizza.stato" name="stato">
+              <option value="in_revisione">In Revisione</option>
+              <option value="Approvata">Approvata</option>
+              <option value="Respinta">Respinta</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="chiudiFormAggiungi()">Annulla</button>
+        <button class="btn-primary" (click)="aggiungiPolizza()">Salva Polizza</button>
+      </div>
+    </div>
+  </div>
+</div>
