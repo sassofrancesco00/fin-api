@@ -55,7 +55,7 @@ Modifica
 
 Puoi trovare gli screenshot funzionali dell'applicazione nella seguente cartella del repository:
 
-🔗 [`/test-screenshots`]([https://github.com/sassofrancesco00/fin-api/tree/main/test-screenshots](https://github.com/sassofrancesco00/fin-api/tree/main/backend/docs/test-screenshots))
+🔗 [`/test-screenshots`]([https://github.com/sassofrancesco00/fin-api/tree/main/test-screenshots])
 
 Queste immagini mostrano:
 - login utente
@@ -69,7 +69,7 @@ Queste immagini mostrano:
 
 La documentazione completa, inclusa la progettazione UML, lo schema ER e la descrizione delle API, si trova nella cartella:
 
-🔗 [`/uml-er-doc`](https://github.com/sassofrancesco00/fin-api/tree/main/uml-er-doc)
+🔗 [`/uml-er-doc`]([https://github.com/sassofrancesco00/fin-api/tree/main/uml-er-doc](https://github.com/sassofrancesco00/fin-api/blob/main/backend/docs/uml.drawio.png))
 
 Include:
 - Diagrammi dei casi d’uso
