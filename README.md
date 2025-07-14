@@ -55,7 +55,7 @@ Modifica
 
 Puoi trovare gli screenshot funzionali dell'applicazione nella seguente cartella del repository:
 
-🔗 [`/test-screenshots`](https://github.com/sassofrancesco00/fin-api/tree/main/test-screenshots)
+🔗 [`/test-screenshots`]([https://github.com/sassofrancesco00/fin-api/tree/main/test-screenshots](https://github.com/sassofrancesco00/fin-api/tree/main/backend/docs/test-screenshots))
 
 Queste immagini mostrano:
 - login utente
