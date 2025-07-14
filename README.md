@@ -105,7 +105,3 @@ Questo progetto è distribuito sotto licenza MIT – vedi il file LICENSE per i 
 
 ✍️ Autore
 Francesco Sasso – sassofrancesco00
-
-yaml
-Copia
-Modifica
